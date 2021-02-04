@@ -8,3 +8,7 @@ cd build
 cmake3 ..
 make
 ```
+Tau reconstruction efficency:
+```sh
+./STauefficiency 2 /pnfs/desy.de/cms/tier2/store/user/myshched/DESYsoft_stauMC/SMS-TStauStau_ctau-0p01to10_TuneCP5_13TeV-madgraphMLM-pythia8_RunIIAutumn18MiniAOD-GridpackScan_102X_upgrade2018_realistic_v15-v1_MINIAODSIM
+```
