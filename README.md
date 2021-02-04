@@ -2,7 +2,7 @@
 
 Compile the modules:
 ```sh
-source /cvmfs/sft.cern.ch/lcg/app/releases/ROOT/6.19.02/x86_64-centos7-gcc48-opt/bin/thisroot.sh
+source /cvmfs/sft.cern.ch/lcg/views/setupViews.sh LCG_99 x86_64-centos7-gcc10-opt
 mkdir build
 cd build
 cmake3 ..
