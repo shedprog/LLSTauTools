@@ -21,7 +21,12 @@ public :
    TTree          *fChain;   //!pointer to the analyzed TTree or TChain
    Int_t           fCurrent; //!current Tree number in a TChain
 
-// Fixed size dimensions of array or collections stored in the TTree if any.
+   Float_t SusyMotherMass;
+   Float_t SusyLSPMass;
+   Float_t SusyLifeTime;
+
+
+   // Fixed size dimensions of array or collections stored in the TTree if any.
 
    // Declaration of leaf types
    UInt_t          errors;
@@ -44,7 +49,7 @@ public :
    Float_t         primvertex_ptq;
    Int_t           primvertex_ntracks;
    Float_t         primvertex_cov[6];
-   
+
    UInt_t          primvertexwithbs_count;
    UInt_t          goodprimvertexwithbs_count;
    Float_t         primvertexwithbs_x;
@@ -54,8 +59,8 @@ public :
    Float_t         primvertexwithbs_ndof;
    Float_t         primvertexwithbs_ptq;
    Int_t           primvertexwithbs_ntracks;
-   Float_t         primvertexwithbs_cov[6];   
-   
+   Float_t         primvertexwithbs_cov[6];
+
 
    //Declaration of refitted vertices
    UInt_t          refitvertex_count;
@@ -71,7 +76,7 @@ public :
    Int_t   refitvertex_eleIndex[1000][2];
    Int_t   refitvertex_muIndex[1000][2];
    Int_t   refitvertex_tauIndex[1000][2];
-   
+
    UInt_t          refitvertexwithbs_count;
    Float_t         refitvertexwithbs_x[100];
    Float_t         refitvertexwithbs_y[100];
@@ -84,8 +89,8 @@ public :
    Int_t   refitvertexwithbs_eleIndex[1000][2];
    Int_t   refitvertexwithbs_muIndex[1000][2];
    Int_t   refitvertexwithbs_tauIndex[1000][2];
-   
-   //...................................   
+
+   //...................................
    UInt_t          muon_count;
    Float_t         muon_px[100];   //[muon_count]
    Float_t         muon_py[100];   //[muon_count]
@@ -825,7 +830,7 @@ public :
    Float_t	   tau_byVVTightDeepTau2017v2p1VSjet[100];	//[tau_count]
    Float_t	   tau_byVVVLooseDeepTau2017v2p1VSe[100];	//[tau_count]
    Float_t	   tau_byVVVLooseDeepTau2017v2p1VSjet[100];	//[tau_count]
-   
+
    Float_t         tau_MVADM2017v1[100];
    Float_t         tau_MVADM2017v1DM0raw[100];
    Float_t         tau_MVADM2017v1DM10raw[100];
@@ -833,7 +838,7 @@ public :
    Float_t         tau_MVADM2017v1DM1raw[100];
    Float_t         tau_MVADM2017v1DM2raw[100];
    Float_t         tau_MVADM2017v1DMotherraw[100];
-   
+
    UInt_t          TauSpinAngles_count;
    Double_t        TauSpinnerWeight[20];//[TauSpinAngles_count]
 
@@ -845,6 +850,9 @@ public :
    Int_t           htxs_njets30;
 
    // List of branches
+   TBranch        *b_SusyMotherMass;
+   TBranch        *b_SusyLSPMass;
+   TBranch        *b_SusyLifeTime;
    TBranch        *b_errors;   //!
    TBranch        *b_event_nr;   //!
    TBranch        *b_event_run;   //!
@@ -865,7 +873,7 @@ public :
    TBranch        *b_primvertex_pdf;   //!
    TBranch        *b_primvertex_ntracks;   //!
    TBranch        *b_primvertex_cov;   //!
-   
+
    TBranch        *b_primvertexwithbs_count;   //!
    TBranch        *b_goodprimvertexwithbs_count;   //!
    TBranch        *b_primvertexwithbs_x;   //!
@@ -876,7 +884,7 @@ public :
    TBranch        *b_primvertexwithbs_pdf;   //!
    TBranch        *b_primvertexwithbs_ntracks;   //!
    TBranch        *b_primvertexwithbs_cov;   //!
-   
+
    //refitvertix
    TBranch        *b_refitvertex_count;   //!
    TBranch        *b_refitvertex_x;   //!
@@ -890,7 +898,7 @@ public :
    TBranch        *b_refitvertex_eleIndex;
    TBranch        *b_refitvertex_muIndex;
    TBranch        *b_refitvertex_tauIndex;
-   
+
    TBranch        *b_refitvertexwithbs_count;   //!
    TBranch        *b_refitvertexwithbs_x;   //!
    TBranch        *b_refitvertexwithbs_y;   //!
@@ -903,7 +911,7 @@ public :
    TBranch        *b_refitvertexwithbs_eleIndex;
    TBranch        *b_refitvertexwithbs_muIndex;
    TBranch        *b_refitvertexwithbs_tauIndex;
-   
+
    TBranch        *b_muon_count;   //!
    TBranch        *b_muon_px;   //!
    TBranch        *b_muon_py;   //!
@@ -1639,7 +1647,7 @@ public :
    TBranch	  *b_tau_byVVTightDeepTau2017v2p1VSjet;	//!
    TBranch	  *b_tau_byVVVLooseDeepTau2017v2p1VSe;	//!
    TBranch	  *b_tau_byVVVLooseDeepTau2017v2p1VSjet;	//!
-   
+
    TBranch        *b_tau_MVADM2017v1;
    TBranch        *b_tau_MVADM2017v1DM0raw;
    TBranch        *b_tau_MVADM2017v1DM10raw;
@@ -1657,7 +1665,7 @@ public :
    TBranch        *b_htxs_stage1p1finecat;
    TBranch        *b_htxs_higgsPt;   //!
    TBranch        *b_htxs_njets30;   //!
-    
+
    AC1B(TTree *tree=0, bool isData=false);
    virtual ~AC1B();
    virtual Int_t    Cut(Long64_t entry);
@@ -1673,7 +1681,7 @@ public :
 #endif
 
 #ifdef AC1B_cxx
-AC1B::AC1B(TTree *tree, bool isData) : fChain(0) 
+AC1B::AC1B(TTree *tree, bool isData) : fChain(0)
 {
 // if parameter tree is not specified (or zero), connect the file
 // used to generate this class and read the Tree.
@@ -1748,6 +1756,9 @@ void AC1B::Init(TTree *tree, bool isData)
    fCurrent = -1;
    fChain->SetMakeClass(1);
 
+   fChain->SetBranchAddress("SusyMotherMass", &SusyMotherMass, &b_SusyMotherMass);
+   fChain->SetBranchAddress("SusyLSPMass", &SusyLSPMass, &b_SusyLSPMass);
+   fChain->SetBranchAddress("SusyLifeTime", &SusyLifeTime, &b_SusyLifeTime);
    fChain->SetBranchAddress("errors", &errors, &b_errors);
    fChain->SetBranchAddress("event_nr", &event_nr, &b_event_nr);
    fChain->SetBranchAddress("event_run", &event_run, &b_event_run);
@@ -1768,7 +1779,7 @@ void AC1B::Init(TTree *tree, bool isData)
    fChain->SetBranchAddress("primvertex_ptq", &primvertex_ptq, &b_primvertex_pdf);
    fChain->SetBranchAddress("primvertex_ntracks", &primvertex_ntracks, &b_primvertex_ntracks);
    fChain->SetBranchAddress("primvertex_cov", primvertex_cov, &b_primvertex_cov);
-   
+
    fChain->SetBranchAddress("primvertexwithbs_count", &primvertexwithbs_count, &b_primvertexwithbs_count);
    fChain->SetBranchAddress("goodprimvertexwithbs_count", &goodprimvertexwithbs_count, &b_goodprimvertexwithbs_count);
    fChain->SetBranchAddress("primvertexwithbs_x", &primvertexwithbs_x, &b_primvertexwithbs_x);
@@ -1779,7 +1790,7 @@ void AC1B::Init(TTree *tree, bool isData)
    fChain->SetBranchAddress("primvertexwithbs_ptq", &primvertexwithbs_ptq, &b_primvertexwithbs_pdf);
    fChain->SetBranchAddress("primvertexwithbs_ntracks", &primvertexwithbs_ntracks, &b_primvertexwithbs_ntracks);
    fChain->SetBranchAddress("primvertexwithbs_cov", primvertexwithbs_cov, &b_primvertexwithbs_cov);
-   
+
    //refit vertices
    fChain->SetBranchAddress("refitvertex_count", &refitvertex_count, &b_refitvertex_count);
    //fChain->SetBranchAddress("goodrefitvertex_count", &goodrefitvertex_count, &b_goodrefitvertex_count);
@@ -1794,7 +1805,7 @@ void AC1B::Init(TTree *tree, bool isData)
    fChain->SetBranchAddress("refitvertex_eleIndex", refitvertex_eleIndex, &b_refitvertex_eleIndex);
    fChain->SetBranchAddress("refitvertex_muIndex", refitvertex_muIndex, &b_refitvertex_muIndex);
    fChain->SetBranchAddress("refitvertex_tauIndex", refitvertex_tauIndex, &b_refitvertex_tauIndex);
-   
+
    fChain->SetBranchAddress("refitvertexwithbs_count", &refitvertexwithbs_count, &b_refitvertexwithbs_count);
    //fChain->SetBranchAddress("goodrefitvertex_count", &goodrefitvertex_count, &b_goodrefitvertex_count);
    fChain->SetBranchAddress("refitvertexwithbs_x", refitvertexwithbs_x, &b_refitvertexwithbs_x);
@@ -1808,7 +1819,7 @@ void AC1B::Init(TTree *tree, bool isData)
    fChain->SetBranchAddress("refitvertexwithbs_eleIndex", refitvertexwithbs_eleIndex, &b_refitvertexwithbs_eleIndex);
    fChain->SetBranchAddress("refitvertexwithbs_muIndex", refitvertexwithbs_muIndex, &b_refitvertexwithbs_muIndex);
    fChain->SetBranchAddress("refitvertexwithbs_tauIndex", refitvertexwithbs_tauIndex, &b_refitvertexwithbs_tauIndex);
-   
+
    fChain->SetBranchAddress("muon_count", &muon_count, &b_muon_count);
    fChain->SetBranchAddress("muon_px", muon_px, &b_muon_px);
    fChain->SetBranchAddress("muon_py", muon_py, &b_muon_py);
@@ -2479,38 +2490,38 @@ void AC1B::Init(TTree *tree, bool isData)
    fChain->SetBranchAddress("tau_byIsolationMVArun2017v2DBnewDMwLTraw2017", tau_byIsolationMVArun2017v2DBnewDMwLTraw2017, &b_tau_byIsolationMVArun2017v2DBnewDMwLTraw2017);
    fChain->SetBranchAddress("tau_byIsolationMVArun2017v2DBoldDMdR0p3wLTraw2017", tau_byIsolationMVArun2017v2DBoldDMdR0p3wLTraw2017, &b_tau_byIsolationMVArun2017v2DBoldDMdR0p3wLTraw2017);
    fChain->SetBranchAddress("tau_byIsolationMVArun2017v2DBoldDMwLTraw2017", tau_byIsolationMVArun2017v2DBoldDMwLTraw2017, &b_tau_byIsolationMVArun2017v2DBoldDMwLTraw2017);
-   fChain->SetBranchAddress("tau_byIsolationMVArun2v1DBnewDMwLTraw2016", tau_byIsolationMVArun2v1DBnewDMwLTraw2016, &b_tau_byIsolationMVArun2v1DBnewDMwLTraw2016);
-   fChain->SetBranchAddress("tau_byIsolationMVArun2v1DBoldDMwLTraw2016", tau_byIsolationMVArun2v1DBoldDMwLTraw2016, &b_tau_byIsolationMVArun2v1DBoldDMwLTraw2016);
+   // fChain->SetBranchAddress("tau_byIsolationMVArun2v1DBnewDMwLTraw2016", tau_byIsolationMVArun2v1DBnewDMwLTraw2016, &b_tau_byIsolationMVArun2v1DBnewDMwLTraw2016);
+   // fChain->SetBranchAddress("tau_byIsolationMVArun2v1DBoldDMwLTraw2016", tau_byIsolationMVArun2v1DBoldDMwLTraw2016, &b_tau_byIsolationMVArun2v1DBoldDMwLTraw2016);
    fChain->SetBranchAddress("tau_byLooseIsolationMVArun2017v1DBoldDMwLT2017", tau_byLooseIsolationMVArun2017v1DBoldDMwLT2017, &b_tau_byLooseIsolationMVArun2017v1DBoldDMwLT2017);
    fChain->SetBranchAddress("tau_byLooseIsolationMVArun2017v2DBnewDMwLT2017", tau_byLooseIsolationMVArun2017v2DBnewDMwLT2017, &b_tau_byLooseIsolationMVArun2017v2DBnewDMwLT2017);
    fChain->SetBranchAddress("tau_byLooseIsolationMVArun2017v2DBoldDMdR0p3wLT2017", tau_byLooseIsolationMVArun2017v2DBoldDMdR0p3wLT2017, &b_tau_byLooseIsolationMVArun2017v2DBoldDMdR0p3wLT2017);
    fChain->SetBranchAddress("tau_byLooseIsolationMVArun2017v2DBoldDMwLT2017", tau_byLooseIsolationMVArun2017v2DBoldDMwLT2017, &b_tau_byLooseIsolationMVArun2017v2DBoldDMwLT2017);
-   fChain->SetBranchAddress("tau_byLooseIsolationMVArun2v1DBnewDMwLT2016", tau_byLooseIsolationMVArun2v1DBnewDMwLT2016, &b_tau_byLooseIsolationMVArun2v1DBnewDMwLT2016);
-   fChain->SetBranchAddress("tau_byLooseIsolationMVArun2v1DBoldDMwLT2016", tau_byLooseIsolationMVArun2v1DBoldDMwLT2016, &b_tau_byLooseIsolationMVArun2v1DBoldDMwLT2016);
+   // fChain->SetBranchAddress("tau_byLooseIsolationMVArun2v1DBnewDMwLT2016", tau_byLooseIsolationMVArun2v1DBnewDMwLT2016, &b_tau_byLooseIsolationMVArun2v1DBnewDMwLT2016);
+   // fChain->SetBranchAddress("tau_byLooseIsolationMVArun2v1DBoldDMwLT2016", tau_byLooseIsolationMVArun2v1DBoldDMwLT2016, &b_tau_byLooseIsolationMVArun2v1DBoldDMwLT2016);
    fChain->SetBranchAddress("tau_byMediumIsolationMVArun2017v1DBoldDMwLT2017", tau_byMediumIsolationMVArun2017v1DBoldDMwLT2017, &b_tau_byMediumIsolationMVArun2017v1DBoldDMwLT2017);
    fChain->SetBranchAddress("tau_byMediumIsolationMVArun2017v2DBnewDMwLT2017", tau_byMediumIsolationMVArun2017v2DBnewDMwLT2017, &b_tau_byMediumIsolationMVArun2017v2DBnewDMwLT2017);
    fChain->SetBranchAddress("tau_byMediumIsolationMVArun2017v2DBoldDMdR0p3wLT2017", tau_byMediumIsolationMVArun2017v2DBoldDMdR0p3wLT2017, &b_tau_byMediumIsolationMVArun2017v2DBoldDMdR0p3wLT2017);
    fChain->SetBranchAddress("tau_byMediumIsolationMVArun2017v2DBoldDMwLT2017", tau_byMediumIsolationMVArun2017v2DBoldDMwLT2017, &b_tau_byMediumIsolationMVArun2017v2DBoldDMwLT2017);
-   fChain->SetBranchAddress("tau_byMediumIsolationMVArun2v1DBnewDMwLT2016", tau_byMediumIsolationMVArun2v1DBnewDMwLT2016, &b_tau_byMediumIsolationMVArun2v1DBnewDMwLT2016);
-   fChain->SetBranchAddress("tau_byMediumIsolationMVArun2v1DBoldDMwLT2016", tau_byMediumIsolationMVArun2v1DBoldDMwLT2016, &b_tau_byMediumIsolationMVArun2v1DBoldDMwLT2016);
+   // fChain->SetBranchAddress("tau_byMediumIsolationMVArun2v1DBnewDMwLT2016", tau_byMediumIsolationMVArun2v1DBnewDMwLT2016, &b_tau_byMediumIsolationMVArun2v1DBnewDMwLT2016);
+   // fChain->SetBranchAddress("tau_byMediumIsolationMVArun2v1DBoldDMwLT2016", tau_byMediumIsolationMVArun2v1DBoldDMwLT2016, &b_tau_byMediumIsolationMVArun2v1DBoldDMwLT2016);
    fChain->SetBranchAddress("tau_byTightIsolationMVArun2017v1DBoldDMwLT2017", tau_byTightIsolationMVArun2017v1DBoldDMwLT2017, &b_tau_byTightIsolationMVArun2017v1DBoldDMwLT2017);
    fChain->SetBranchAddress("tau_byTightIsolationMVArun2017v2DBnewDMwLT2017", tau_byTightIsolationMVArun2017v2DBnewDMwLT2017, &b_tau_byTightIsolationMVArun2017v2DBnewDMwLT2017);
    fChain->SetBranchAddress("tau_byTightIsolationMVArun2017v2DBoldDMdR0p3wLT2017", tau_byTightIsolationMVArun2017v2DBoldDMdR0p3wLT2017, &b_tau_byTightIsolationMVArun2017v2DBoldDMdR0p3wLT2017);
    fChain->SetBranchAddress("tau_byTightIsolationMVArun2017v2DBoldDMwLT2017", tau_byTightIsolationMVArun2017v2DBoldDMwLT2017, &b_tau_byTightIsolationMVArun2017v2DBoldDMwLT2017);
-   fChain->SetBranchAddress("tau_byTightIsolationMVArun2v1DBnewDMwLT2016", tau_byTightIsolationMVArun2v1DBnewDMwLT2016, &b_tau_byTightIsolationMVArun2v1DBnewDMwLT2016);
-   fChain->SetBranchAddress("tau_byTightIsolationMVArun2v1DBoldDMwLT2016", tau_byTightIsolationMVArun2v1DBoldDMwLT2016, &b_tau_byTightIsolationMVArun2v1DBoldDMwLT2016);
+   // fChain->SetBranchAddress("tau_byTightIsolationMVArun2v1DBnewDMwLT2016", tau_byTightIsolationMVArun2v1DBnewDMwLT2016, &b_tau_byTightIsolationMVArun2v1DBnewDMwLT2016);
+   // fChain->SetBranchAddress("tau_byTightIsolationMVArun2v1DBoldDMwLT2016", tau_byTightIsolationMVArun2v1DBoldDMwLT2016, &b_tau_byTightIsolationMVArun2v1DBoldDMwLT2016);
    fChain->SetBranchAddress("tau_byVLooseIsolationMVArun2017v1DBoldDMwLT2017", tau_byVLooseIsolationMVArun2017v1DBoldDMwLT2017, &b_tau_byVLooseIsolationMVArun2017v1DBoldDMwLT2017);
    fChain->SetBranchAddress("tau_byVLooseIsolationMVArun2017v2DBnewDMwLT2017", tau_byVLooseIsolationMVArun2017v2DBnewDMwLT2017, &b_tau_byVLooseIsolationMVArun2017v2DBnewDMwLT2017);
    fChain->SetBranchAddress("tau_byVLooseIsolationMVArun2017v2DBoldDMdR0p3wLT2017", tau_byVLooseIsolationMVArun2017v2DBoldDMdR0p3wLT2017, &b_tau_byVLooseIsolationMVArun2017v2DBoldDMdR0p3wLT2017);
    fChain->SetBranchAddress("tau_byVLooseIsolationMVArun2017v2DBoldDMwLT2017", tau_byVLooseIsolationMVArun2017v2DBoldDMwLT2017, &b_tau_byVLooseIsolationMVArun2017v2DBoldDMwLT2017);
-   fChain->SetBranchAddress("tau_byVLooseIsolationMVArun2v1DBnewDMwLT2016", tau_byVLooseIsolationMVArun2v1DBnewDMwLT2016, &b_tau_byVLooseIsolationMVArun2v1DBnewDMwLT2016);
-   fChain->SetBranchAddress("tau_byVLooseIsolationMVArun2v1DBoldDMwLT2016", tau_byVLooseIsolationMVArun2v1DBoldDMwLT2016, &b_tau_byVLooseIsolationMVArun2v1DBoldDMwLT2016);
+   // fChain->SetBranchAddress("tau_byVLooseIsolationMVArun2v1DBnewDMwLT2016", tau_byVLooseIsolationMVArun2v1DBnewDMwLT2016, &b_tau_byVLooseIsolationMVArun2v1DBnewDMwLT2016);
+   // fChain->SetBranchAddress("tau_byVLooseIsolationMVArun2v1DBoldDMwLT2016", tau_byVLooseIsolationMVArun2v1DBoldDMwLT2016, &b_tau_byVLooseIsolationMVArun2v1DBoldDMwLT2016);
    fChain->SetBranchAddress("tau_byVTightIsolationMVArun2017v1DBoldDMwLT2017", tau_byVTightIsolationMVArun2017v1DBoldDMwLT2017, &b_tau_byVTightIsolationMVArun2017v1DBoldDMwLT2017);
    fChain->SetBranchAddress("tau_byVTightIsolationMVArun2017v2DBnewDMwLT2017", tau_byVTightIsolationMVArun2017v2DBnewDMwLT2017, &b_tau_byVTightIsolationMVArun2017v2DBnewDMwLT2017);
    fChain->SetBranchAddress("tau_byVTightIsolationMVArun2017v2DBoldDMdR0p3wLT2017", tau_byVTightIsolationMVArun2017v2DBoldDMdR0p3wLT2017, &b_tau_byVTightIsolationMVArun2017v2DBoldDMdR0p3wLT2017);
    fChain->SetBranchAddress("tau_byVTightIsolationMVArun2017v2DBoldDMwLT2017", tau_byVTightIsolationMVArun2017v2DBoldDMwLT2017, &b_tau_byVTightIsolationMVArun2017v2DBoldDMwLT2017);
-   fChain->SetBranchAddress("tau_byVTightIsolationMVArun2v1DBnewDMwLT2016", tau_byVTightIsolationMVArun2v1DBnewDMwLT2016, &b_tau_byVTightIsolationMVArun2v1DBnewDMwLT2016);
-   fChain->SetBranchAddress("tau_byVTightIsolationMVArun2v1DBoldDMwLT2016", tau_byVTightIsolationMVArun2v1DBoldDMwLT2016, &b_tau_byVTightIsolationMVArun2v1DBoldDMwLT2016);
+   // fChain->SetBranchAddress("tau_byVTightIsolationMVArun2v1DBnewDMwLT2016", tau_byVTightIsolationMVArun2v1DBnewDMwLT2016, &b_tau_byVTightIsolationMVArun2v1DBnewDMwLT2016);
+   // fChain->SetBranchAddress("tau_byVTightIsolationMVArun2v1DBoldDMwLT2016", tau_byVTightIsolationMVArun2v1DBoldDMwLT2016, &b_tau_byVTightIsolationMVArun2v1DBoldDMwLT2016);
    fChain->SetBranchAddress("tau_byVVLooseIsolationMVArun2017v1DBoldDMwLT2017", tau_byVVLooseIsolationMVArun2017v1DBoldDMwLT2017, &b_tau_byVVLooseIsolationMVArun2017v1DBoldDMwLT2017);
    fChain->SetBranchAddress("tau_byVVLooseIsolationMVArun2017v2DBnewDMwLT2017", tau_byVVLooseIsolationMVArun2017v2DBnewDMwLT2017, &b_tau_byVVLooseIsolationMVArun2017v2DBnewDMwLT2017);
    fChain->SetBranchAddress("tau_byVVLooseIsolationMVArun2017v2DBoldDMdR0p3wLT2017", tau_byVVLooseIsolationMVArun2017v2DBoldDMdR0p3wLT2017, &b_tau_byVVLooseIsolationMVArun2017v2DBoldDMdR0p3wLT2017);
@@ -2519,7 +2530,7 @@ void AC1B::Init(TTree *tree, bool isData)
    fChain->SetBranchAddress("tau_byVVTightIsolationMVArun2017v2DBnewDMwLT2017", tau_byVVTightIsolationMVArun2017v2DBnewDMwLT2017, &b_tau_byVVTightIsolationMVArun2017v2DBnewDMwLT2017);
    fChain->SetBranchAddress("tau_byVVTightIsolationMVArun2017v2DBoldDMdR0p3wLT2017", tau_byVVTightIsolationMVArun2017v2DBoldDMdR0p3wLT2017, &b_tau_byVVTightIsolationMVArun2017v2DBoldDMdR0p3wLT2017);
    fChain->SetBranchAddress("tau_byVVTightIsolationMVArun2017v2DBoldDMwLT2017", tau_byVVTightIsolationMVArun2017v2DBoldDMwLT2017, &b_tau_byVVTightIsolationMVArun2017v2DBoldDMwLT2017);
-   fChain->SetBranchAddress("tau_byVVTightIsolationMVArun2v1DBnewDMwLT2016", tau_byVVTightIsolationMVArun2v1DBnewDMwLT2016, &b_tau_byVVTightIsolationMVArun2v1DBnewDMwLT2016);
+   // fChain->SetBranchAddress("tau_byVVTightIsolationMVArun2v1DBnewDMwLT2016", tau_byVVTightIsolationMVArun2v1DBnewDMwLT2016, &b_tau_byVVTightIsolationMVArun2v1DBnewDMwLT2016);
    fChain->SetBranchAddress("tau_byDeepTau2017v2p1VSeraw", tau_byDeepTau2017v2p1VSeraw, &b_tau_byDeepTau2017v2p1VSeraw);
    fChain->SetBranchAddress("tau_byDeepTau2017v2p1VSjetraw", tau_byDeepTau2017v2p1VSjetraw, &b_tau_byDeepTau2017v2p1VSjetraw);
    fChain->SetBranchAddress("tau_byDeepTau2017v2p1VSmuraw", tau_byDeepTau2017v2p1VSmuraw, &b_tau_byDeepTau2017v2p1VSmuraw);
@@ -2551,7 +2562,7 @@ void AC1B::Init(TTree *tree, bool isData)
    fChain->SetBranchAddress("tau_MVADM2017v1DM1raw", tau_MVADM2017v1DM1raw, &b_tau_MVADM2017v1DM1raw);
    fChain->SetBranchAddress("tau_MVADM2017v1DM2raw", tau_MVADM2017v1DM2raw, &b_tau_MVADM2017v1DM2raw);
    fChain->SetBranchAddress("tau_MVADM2017v1DMotherraw", tau_MVADM2017v1DMotherraw, &b_tau_MVADM2017v1DMotherraw);
-   
+
    fChain->SetBranchAddress("TauSpinAngles_count", &TauSpinAngles_count, &b_TauSpinAngles_count);
    fChain->SetBranchAddress("TauSpinnerWeight", TauSpinnerWeight, &b_TauSpinnerWeight);
 
@@ -2561,7 +2572,7 @@ void AC1B::Init(TTree *tree, bool isData)
    fChain->SetBranchAddress("htxs_stage1p1finecat",&htxs_stage1p1finecat , &b_htxs_stage1p1finecat);
    fChain->SetBranchAddress("htxs_higgsPt",&htxs_higgsPt , &b_htxs_higgsPt);
    fChain->SetBranchAddress("htxs_njets30", &htxs_njets30, &b_htxs_njets30);
-   
+
 
    Notify();
 }
