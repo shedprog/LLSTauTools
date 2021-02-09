@@ -25,7 +25,7 @@
 #include "AC1B.h"
 #include "FileTools.h"
 
-bool MatchGenToTau( const TLorentzVector& p4_1, const TLorentzVector& p4_2)
+bool matchGenToTau( const TLorentzVector& p4_1, const TLorentzVector& p4_2)
 {
   float dr = 0.2;
 
@@ -35,6 +35,30 @@ bool MatchGenToTau( const TLorentzVector& p4_1, const TLorentzVector& p4_2)
   else return false;
 }
 
+void printGenTaus(const AC1B* maintree, const size_t& gentau_i)
+{
+  if(gentau_i==0)
+    std::cout << "----------------------------------------" << std::endl;
+  std::cout << "tau_i:" << gentau_i << " | "
+            << maintree->gentau_fromHardProcess[gentau_i] << " "
+            << maintree->gentau_fromHardProcessBeforeFSR[gentau_i] << " "
+            << maintree->gentau_isDecayedLeptonHadron[gentau_i] << " "
+            << maintree->gentau_isDirectHadronDecayProduct[gentau_i] << " "
+            << maintree->gentau_isDirectHardProcessTauDecayProduct[gentau_i] << " "
+            << maintree->gentau_isDirectPromptTauDecayProduct[gentau_i] << " "
+            << maintree->gentau_isDirectTauDecayProduct[gentau_i] << " "
+            << maintree->gentau_isFirstCopy[gentau_i] << " "
+            << maintree->gentau_isHardProcess[gentau_i] << " "
+            << maintree->gentau_isHardProcessTauDecayProduct[gentau_i] << " "
+            << maintree->gentau_isLastCopy[gentau_i] << " "
+            << maintree->gentau_isLastCopyBeforeFSR[gentau_i] << " "
+            << maintree->gentau_isPrompt[gentau_i] << " "
+            << maintree->gentau_isPromptTauDecayProduct[gentau_i] << " "
+            << maintree->gentau_isTauDecayProduct[gentau_i] << " "
+            << maintree->gentau_status[gentau_i] << " ";
+  std::cout << " ";
+  std::cin.ignore();
+}
 
 int main(int argc, char * argv[])
 {
@@ -83,7 +107,6 @@ int main(int argc, char * argv[])
   TH1F *h1_Tau_h_byTightDeepTau_reco = new TH1F("h1_Tau_h_byTightDeepTau_reco","Reco hadronic taus lifetime byTightDeepTau",1000,0,100);
   TH1F *h1_Tau_h_byTightDeepTau_ratio = new TH1F("h1_Tau_h_byTightDeepTau_ratio","Reco/All hadronic taus lifetime byTightDeepTau",1000,0,100);
 
-
   // Start of the analysis
   size_t goodTaus = 0;
   size_t hadronicTaus = 0;
@@ -96,17 +119,19 @@ int main(int argc, char * argv[])
 
     size_t n_gentau = maintree->gentau_count;
     for (size_t gentau_i=0; gentau_i<n_gentau; gentau_i++) {
+      // printGenTaus(maintree, gentau_i);
 
       // Chose only good gentaus
       if(maintree->gentau_fromHardProcess[gentau_i]!=1
-        || maintree->gentau_status[gentau_i]!=2) continue;
+        || maintree->gentau_status[gentau_i]!=2
+        ) continue;
       goodTaus++;
 
       // If hadronic tau
       if(maintree->gentau_decayMode[gentau_i] >= 8) continue;
       hadronicTaus++;
 
-      h1_Tau_h_all->Fill(stau_lifetime);
+      // h1_Tau_h_all->Fill(stau_lifetime);
 
       TLorentzVector gen_p4, tau_p4;
       gen_p4.SetPxPyPzE(maintree->gentau_px[gentau_i],
@@ -163,18 +188,20 @@ int main(int argc, char * argv[])
   h1_Tau_h_byTightDeepTau_ratio->Divide(h1_Tau_h_all);
 
   TFile *outputFile = new TFile("LifeTimeEfficiency.root","RECREATE");
+  
   h1_Tau_h_all->Write();
   h1_Tau_h_reco->Write();
   h1_Tau_h_ratio->Write();
-  // h1_Tau_h_byLooseDeepTau_all->Write();
+
   h1_Tau_h_byLooseDeepTau_reco->Write();
   h1_Tau_h_byLooseDeepTau_ratio->Write();
-  // h1_Tau_h_byMediumDeepTau_all->Write();
+
   h1_Tau_h_byMediumDeepTau_reco->Write();
   h1_Tau_h_byMediumDeepTau_ratio->Write();
-  // h1_Tau_h_byTightDeepTau_all->Write();
+
   h1_Tau_h_byTightDeepTau_reco->Write();
   h1_Tau_h_byTightDeepTau_ratio->Write();
+
   outputFile->Close();
 
   std::cout << "Good taus: " << goodTaus << std::endl;
