@@ -90,22 +90,50 @@ int main(int argc, char * argv[])
   size_t numberOfEntries = maintree->GetEntries();
   std::cout << "Number of entries in Tree = " << numberOfEntries << std::endl;
 
-  // Histograms to File
+  // Count identification histogram
   TH1F *h1_Tau_h_all = new TH1F("h1_Tau_h_all","All hadronic taus lifetime",1000,0,100);
   TH1F *h1_Tau_h_reco = new TH1F("h1_Tau_h_reco","Reco hadronic taus lifetime",1000,0,100);
   TH1F *h1_Tau_h_ratio = new TH1F("h1_Tau_h_ratio","Reco/All hadronic taus lifetime",1000,0,100);
-
-  // TH1F *h1_Tau_h_byLooseDeepTau_all = new TH1F("h1_Tau_h_byLooseDeepTau_all","All hadronic taus lifetime byLooseDeepTau",1000,0,100);
   TH1F *h1_Tau_h_byLooseDeepTau_reco = new TH1F("h1_Tau_h_byLooseDeepTau_reco","Reco hadronic taus lifetime byLooseDeepTau",1000,0,100);
   TH1F *h1_Tau_h_byLooseDeepTau_ratio = new TH1F("h1_Tau_h_byLooseDeepTau_ratio","Reco/All hadronic taus lifetime byLooseDeepTau",1000,0,100);
-
-  // TH1F *h1_Tau_h_byMediumDeepTau_all = new TH1F("h1_Tau_h_byMediumDeepTau_all","All hadronic taus lifetime byMediumDeepTau",1000,0,100);
   TH1F *h1_Tau_h_byMediumDeepTau_reco = new TH1F("h1_Tau_h_byMediumDeepTau_reco","Reco hadronic taus lifetime byMediumDeepTau",1000,0,100);
   TH1F *h1_Tau_h_byMediumDeepTau_ratio = new TH1F("h1_Tau_h_byMediumDeepTau_ratio","Reco/All hadronic taus lifetime byMediumDeepTau",1000,0,100);
-
-  // TH1F *h1_Tau_h_byTightDeepTau_all = new TH1F("h1_Tau_h_byTightDeepTau_all","All hadronic taus lifetime byTightDeepTau",1000,0,100);
   TH1F *h1_Tau_h_byTightDeepTau_reco = new TH1F("h1_Tau_h_byTightDeepTau_reco","Reco hadronic taus lifetime byTightDeepTau",1000,0,100);
   TH1F *h1_Tau_h_byTightDeepTau_ratio = new TH1F("h1_Tau_h_byTightDeepTau_ratio","Reco/All hadronic taus lifetime byTightDeepTau",1000,0,100);
+
+  // Reconstructed vars
+  // pt
+  TH1F *h1_dpt_0p01and0p05 = new TH1F("h1_dpt_0p01and0p05","delta pt 0.01mm-0.05mm",1000,-1000,1000);
+  TH1F *h1_dpt_0p1and0p5 = new TH1F("h1_dpt_0p1and0p5","delta pt 0.1mm-0.5mm",1000,-1000,1000);
+  TH1F *h1_dpt_1p0 = new TH1F("h1_dpt_1p0","delta pt 1.0mm",1000,-1000,1000);
+  TH1F *h1_dpt_2p5 = new TH1F("h1_dpt_2p5","delta pt 2.5mm",1000,-1000,1000);
+  TH1F *h1_dpt_5p0 = new TH1F("h1_dpt_5p0","delta pt 5.0mm",1000,-1000,1000);
+  TH1F *h1_dpt_7p5 = new TH1F("h1_dpt_7p5","delta pt 7.5mm",1000,-1000,1000);
+  TH1F *h1_dpt_10p0 = new TH1F("h1_dpt_10p0","delta pt 10.0mm",1000,-1000,1000);
+  // eta
+  TH1F *h1_deta_0p01and0p05 = new TH1F("h1_eta_0p01and0p05","delta eta 0.01mm-0.05mm",1000,-0.2,0.2);
+  TH1F *h1_deta_0p1and0p5 = new TH1F("h1_eta_0p1and0p5","delta eta 0.1mm-0.5mm",1000,-0.2,0.2);
+  TH1F *h1_deta_1p0 = new TH1F("h1_eta_1p0","delta eta 1.0mm",1000,-0.2,0.2);
+  TH1F *h1_deta_2p5 = new TH1F("h1_eta_2p5","delta eta 2.5mm",1000,-0.2,0.2);
+  TH1F *h1_deta_5p0 = new TH1F("h1_eta_5p0","delta eta 5.0mm",1000,-0.2,0.2);
+  TH1F *h1_deta_7p5 = new TH1F("h1_eta_7p5","delta eta 7.5mm",1000,-0.2,0.2);
+  TH1F *h1_deta_10p0 = new TH1F("h1_eta_10p0","delta eta 10.0mm",1000,-0.2,0.2);
+  // phi
+  TH1F *h1_dphi_0p01and0p05 = new TH1F("h1_dphi_0p01and0p05","delta phi 0.01mm-0.05mm",1000,-0.2,0.2);
+  TH1F *h1_dphi_0p1and0p5 = new TH1F("h1_dphi_0p1and0p5","delta phi 0.1mm-0.5mm",1000,-0.2,0.2);
+  TH1F *h1_dphi_1p0 = new TH1F("h1_dphi_1p0","delta phi 1.0mm",1000,-0.2,0.2);
+  TH1F *h1_dphi_2p5 = new TH1F("h1_dphi_2p5","delta phi 2.5mm",1000,-0.2,0.2);
+  TH1F *h1_dphi_5p0 = new TH1F("h1_dphi_5p0","delta phi 5.0mm",1000,-0.2,0.2);
+  TH1F *h1_dphi_7p5 = new TH1F("h1_dphi_7p5","delta phi 7.5mm",1000,-0.2,0.2);
+  TH1F *h1_dphi_10p0 = new TH1F("h1_dphi_10p0","delta phi 10.0mm",1000,-0.2,0.2);
+  // mass
+  TH1F *h1_dm_0p01and0p05 = new TH1F("h1_dm_0p01and0p05","delta mass 0.01mm-0.05mm",1000,-20,20);
+  TH1F *h1_dm_0p1and0p5 = new TH1F("h1_dm_0p1and0p5","delta mass 0.1mm-0.5mm",1000,-20,20);
+  TH1F *h1_dm_1p0 = new TH1F("h1_dm_1p0","delta mass 1.0mm",1000,-20,20);
+  TH1F *h1_dm_2p5 = new TH1F("h1_dm_2p5","delta mass 2.5mm",1000,-20,20);
+  TH1F *h1_dm_5p0 = new TH1F("h1_dm_5p0","delta mass 5.0mm",1000,-20,20);
+  TH1F *h1_dm_7p5 = new TH1F("h1_dm_7p5","delta mass 7.5mm",1000,-20,20);
+  TH1F *h1_dm_10p0 = new TH1F("h1_dm_10p0","delta mass 10.0mm",1000,-20,20);
 
   // Start of the analysis
   size_t goodTaus = 0;
@@ -116,6 +144,7 @@ int main(int argc, char * argv[])
     if (iEntry%1000==0) std::cout << "processed " << iEntry << " events" << std::endl;
 
     float stau_lifetime = maintree->SusyLifeTime;
+    // std::cout << std::setprecision (15) << stau_lifetime << std::endl;
 
     size_t n_gentau = maintree->gentau_count;
     for (size_t gentau_i=0; gentau_i<n_gentau; gentau_i++) {
@@ -131,7 +160,7 @@ int main(int argc, char * argv[])
       if(maintree->gentau_decayMode[gentau_i] >= 8) continue;
       hadronicTaus++;
 
-      // h1_Tau_h_all->Fill(stau_lifetime);
+      h1_Tau_h_all->Fill(stau_lifetime);
 
       TLorentzVector gen_p4, tau_p4;
       gen_p4.SetPxPyPzE(maintree->gentau_px[gentau_i],
@@ -141,14 +170,52 @@ int main(int argc, char * argv[])
 
       size_t n_tau = maintree->tau_count;
       for (size_t tau_i=0; tau_i<n_tau; tau_i++) {
-        // std::cout << "tau, match: " << maintree->tau_genmatch[tau_i] << " DM:" << maintree->tau_decayMode[tau_i] << std::endl;
+
         tau_p4.SetPxPyPzE(maintree->tau_px[tau_i],
                           maintree->tau_py[tau_i],
                           maintree->tau_pz[tau_i],
                           maintree->tau_e[tau_i]);
-        bool isMatch = MatchGenToTau(gen_p4, tau_p4);
+        bool isMatch = matchGenToTau(gen_p4, tau_p4);
+
         if(isMatch) {
           hadronicTaus_reco++;
+
+          if(stau_lifetime>=0.01 && stau_lifetime<=0.0501) {
+            h1_dpt_0p01and0p05->Fill(gen_p4.Pt()-tau_p4.Pt());
+            h1_deta_0p01and0p05->Fill(gen_p4.Eta()-tau_p4.Eta());
+            h1_dphi_0p01and0p05->Fill(gen_p4.Phi()-tau_p4.Phi());
+            h1_dm_0p01and0p05->Fill(gen_p4.M()-tau_p4.M());
+          } else if(stau_lifetime>=0.1 && stau_lifetime<=0.501){
+            h1_dpt_0p1and0p5->Fill(gen_p4.Pt()-tau_p4.Pt());
+            h1_deta_0p1and0p5->Fill(gen_p4.Eta()-tau_p4.Eta());
+            h1_dphi_0p1and0p5->Fill(gen_p4.Phi()-tau_p4.Phi());
+            h1_dm_0p1and0p5->Fill(gen_p4.M()-tau_p4.M());
+          } else if(stau_lifetime==1.0){
+            h1_dpt_1p0->Fill(gen_p4.Pt()-tau_p4.Pt());
+            h1_deta_1p0->Fill(gen_p4.Eta()-tau_p4.Eta());
+            h1_dphi_1p0->Fill(gen_p4.Phi()-tau_p4.Phi());
+            h1_dm_1p0->Fill(gen_p4.M()-tau_p4.M());
+          } else if(stau_lifetime==2.5){
+            h1_dpt_2p5->Fill(gen_p4.Pt()-tau_p4.Pt());
+            h1_deta_2p5->Fill(gen_p4.Eta()-tau_p4.Eta());
+            h1_dphi_2p5->Fill(gen_p4.Phi()-tau_p4.Phi());
+            h1_dm_2p5->Fill(gen_p4.M()-tau_p4.M());
+          } else if(stau_lifetime==5.0){
+            h1_dpt_5p0->Fill(gen_p4.Pt()-tau_p4.Pt());
+            h1_deta_5p0->Fill(gen_p4.Eta()-tau_p4.Eta());
+            h1_dphi_5p0->Fill(gen_p4.Phi()-tau_p4.Phi());
+            h1_dm_5p0->Fill(gen_p4.M()-tau_p4.M());
+          } else if(stau_lifetime==7.5){
+            h1_dpt_7p5->Fill(gen_p4.Pt()-tau_p4.Pt());
+            h1_deta_7p5->Fill(gen_p4.Eta()-tau_p4.Eta());
+            h1_dphi_7p5->Fill(gen_p4.Phi()-tau_p4.Phi());
+            h1_dm_7p5->Fill(gen_p4.M()-tau_p4.M());
+          } else if(stau_lifetime==10.0){
+            h1_dpt_10p0->Fill(gen_p4.Pt()-tau_p4.Pt());
+            h1_deta_10p0->Fill(gen_p4.Eta()-tau_p4.Eta());
+            h1_dphi_10p0->Fill(gen_p4.Phi()-tau_p4.Phi());
+            h1_dm_10p0->Fill(gen_p4.M()-tau_p4.M());
+          }
 
           h1_Tau_h_reco->Fill(stau_lifetime);
           h1_Tau_h_ratio->Fill(stau_lifetime);
@@ -187,21 +254,46 @@ int main(int argc, char * argv[])
   h1_Tau_h_byMediumDeepTau_ratio->Divide(h1_Tau_h_all);
   h1_Tau_h_byTightDeepTau_ratio->Divide(h1_Tau_h_all);
 
+  // Create histograms
+
   TFile *outputFile = new TFile("LifeTimeEfficiency.root","RECREATE");
-  
   h1_Tau_h_all->Write();
   h1_Tau_h_reco->Write();
   h1_Tau_h_ratio->Write();
-
   h1_Tau_h_byLooseDeepTau_reco->Write();
   h1_Tau_h_byLooseDeepTau_ratio->Write();
-
   h1_Tau_h_byMediumDeepTau_reco->Write();
   h1_Tau_h_byMediumDeepTau_ratio->Write();
-
   h1_Tau_h_byTightDeepTau_reco->Write();
   h1_Tau_h_byTightDeepTau_ratio->Write();
-
+  h1_dpt_0p01and0p05->Write();
+  h1_dpt_0p1and0p5->Write();
+  h1_dpt_1p0->Write();
+  h1_dpt_2p5->Write();
+  h1_dpt_5p0->Write();
+  h1_dpt_7p5->Write();
+  h1_dpt_10p0->Write();
+  h1_deta_0p01and0p05->Write();
+  h1_deta_0p1and0p5->Write();
+  h1_deta_1p0->Write();
+  h1_deta_2p5->Write();
+  h1_deta_5p0->Write();
+  h1_deta_7p5->Write();
+  h1_deta_10p0->Write();
+  h1_dphi_0p01and0p05->Write();
+  h1_dphi_0p1and0p5->Write();
+  h1_dphi_1p0->Write();
+  h1_dphi_2p5->Write();
+  h1_dphi_5p0->Write();
+  h1_dphi_7p5->Write();
+  h1_dphi_10p0->Write();
+  h1_dm_0p01and0p05->Write();
+  h1_dm_0p1and0p5->Write();
+  h1_dm_1p0->Write();
+  h1_dm_2p5->Write();
+  h1_dm_5p0->Write();
+  h1_dm_7p5->Write();
+  h1_dm_10p0->Write();
   outputFile->Close();
 
   std::cout << "Good taus: " << goodTaus << std::endl;
