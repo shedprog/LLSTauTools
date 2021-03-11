@@ -15,5 +15,8 @@ include_directories(inc)
 file(GLOB SOURCES "src/*.cc" "src/*.cpp")
 
 # Building soft to analyse StauEfficiency
-add_executable(LifeTimeTauEfficiency bin/LifeTimeTauEfficiency.cpp ${SOURCES})
-target_link_libraries(LifeTimeTauEfficiency ${ROOT_LIBRARIES} ${Boost_LIBRARIES})
+#add_executable(LifeTimeTauEfficiency bin/LifeTimeTauEfficiency.cpp ${SOURCES})
+#target_link_libraries(LifeTimeTauEfficiency ${ROOT_LIBRARIES} ${Boost_LIBRARIES})
+
+add_executable(LifeTimeTauEfficiencyTauTuple bin/LifeTimeTauEfficiencyTauTuple.cpp ${SOURCES})
+target_link_libraries(LifeTimeTauEfficiencyTauTuple ${ROOT_LIBRARIES} ${Boost_LIBRARIES})

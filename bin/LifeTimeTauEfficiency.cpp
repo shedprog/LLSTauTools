@@ -25,6 +25,17 @@
 #include "AC1B.h"
 #include "FileTools.h"
 
+// enum class genTauDecayMode {
+//   oneProng0Pi0 = 0,
+//   oneProng1Pi0 = 1,
+//   oneProng2Pi0 = 2,
+//   oneProngOther = 3,
+//   threeProng0Pi0 = 4,
+//   threeProng1Pi0 = 5,
+//   threeProngOther = 6,
+//   rare = 7
+// }
+
 bool matchGenToTau( const TLorentzVector& p4_1, const TLorentzVector& p4_2)
 {
   float dr = 0.2;
@@ -135,6 +146,14 @@ int main(int argc, char * argv[])
   TH1F *h1_dm_7p5 = new TH1F("h1_dm_7p5","delta mass 7.5mm",1000,-20,20);
   TH1F *h1_dm_10p0 = new TH1F("h1_dm_10p0","delta mass 10.0mm",1000,-20,20);
 
+  TH2F *DMm_0p01and0p05 = new TH2F("DMm_0p01and0p05", "Decay Mode Migration 0p01and0p05", 9, 0, 9, 8, 0, 8);
+  TH2F *DMm_0p1and0p5 = new TH2F("DMm_0p1and0p5", "Decay Mode Migration 0p1and0p5", 9, 0, 9, 8, 0, 8);
+  TH2F *DMm_1p0 = new TH2F("DMm_1p0", "Decay Mode Migration 1p0", 9, 0, 9, 8, 0, 8);
+  TH2F *DMm_2p5 = new TH2F("DMm_2p5", "Decay Mode Migration 2p5", 9, 0, 9, 8, 0, 8);
+  TH2F *DMm_5p0 = new TH2F("DMm_5p0", "Decay Mode Migration 5p0", 9, 0, 9, 8, 0, 8);
+  TH2F *DMm_7p5 = new TH2F("DMm_7p5", "Decay Mode Migration 7p5", 9, 0, 9, 8, 0, 8);
+  TH2F *DMm_10p0 = new TH2F("DMm_10p0", "Decay Mode Migration 10p0", 9, 0, 9, 8, 0, 8);
+
   // Start of the analysis
   size_t goodTaus = 0;
   size_t hadronicTaus = 0;
@@ -185,36 +204,43 @@ int main(int argc, char * argv[])
             h1_deta_0p01and0p05->Fill(gen_p4.Eta()-tau_p4.Eta());
             h1_dphi_0p01and0p05->Fill(gen_p4.Phi()-tau_p4.Phi());
             h1_dm_0p01and0p05->Fill(gen_p4.M()-tau_p4.M());
+            DMm_0p01and0p05->Fill(maintree->tau_decayMode[tau_i], maintree->gentau_decayMode[gentau_i]);
           } else if(stau_lifetime>=0.1 && stau_lifetime<=0.501){
             h1_dpt_0p1and0p5->Fill(gen_p4.Pt()-tau_p4.Pt());
             h1_deta_0p1and0p5->Fill(gen_p4.Eta()-tau_p4.Eta());
             h1_dphi_0p1and0p5->Fill(gen_p4.Phi()-tau_p4.Phi());
             h1_dm_0p1and0p5->Fill(gen_p4.M()-tau_p4.M());
+            DMm_0p1and0p5->Fill(maintree->tau_decayMode[tau_i], maintree->gentau_decayMode[gentau_i]);
           } else if(stau_lifetime==1.0){
             h1_dpt_1p0->Fill(gen_p4.Pt()-tau_p4.Pt());
             h1_deta_1p0->Fill(gen_p4.Eta()-tau_p4.Eta());
             h1_dphi_1p0->Fill(gen_p4.Phi()-tau_p4.Phi());
             h1_dm_1p0->Fill(gen_p4.M()-tau_p4.M());
+            DMm_1p0->Fill(maintree->tau_decayMode[tau_i], maintree->gentau_decayMode[gentau_i]);
           } else if(stau_lifetime==2.5){
             h1_dpt_2p5->Fill(gen_p4.Pt()-tau_p4.Pt());
             h1_deta_2p5->Fill(gen_p4.Eta()-tau_p4.Eta());
             h1_dphi_2p5->Fill(gen_p4.Phi()-tau_p4.Phi());
             h1_dm_2p5->Fill(gen_p4.M()-tau_p4.M());
+            DMm_2p5->Fill(maintree->tau_decayMode[tau_i], maintree->gentau_decayMode[gentau_i]);
           } else if(stau_lifetime==5.0){
             h1_dpt_5p0->Fill(gen_p4.Pt()-tau_p4.Pt());
             h1_deta_5p0->Fill(gen_p4.Eta()-tau_p4.Eta());
             h1_dphi_5p0->Fill(gen_p4.Phi()-tau_p4.Phi());
             h1_dm_5p0->Fill(gen_p4.M()-tau_p4.M());
+            DMm_5p0->Fill(maintree->tau_decayMode[tau_i], maintree->gentau_decayMode[gentau_i]);
           } else if(stau_lifetime==7.5){
             h1_dpt_7p5->Fill(gen_p4.Pt()-tau_p4.Pt());
             h1_deta_7p5->Fill(gen_p4.Eta()-tau_p4.Eta());
             h1_dphi_7p5->Fill(gen_p4.Phi()-tau_p4.Phi());
             h1_dm_7p5->Fill(gen_p4.M()-tau_p4.M());
+            DMm_7p5->Fill(maintree->tau_decayMode[tau_i], maintree->gentau_decayMode[gentau_i]);
           } else if(stau_lifetime==10.0){
             h1_dpt_10p0->Fill(gen_p4.Pt()-tau_p4.Pt());
             h1_deta_10p0->Fill(gen_p4.Eta()-tau_p4.Eta());
             h1_dphi_10p0->Fill(gen_p4.Phi()-tau_p4.Phi());
             h1_dm_10p0->Fill(gen_p4.M()-tau_p4.M());
+            DMm_10p0->Fill(maintree->tau_decayMode[tau_i], maintree->gentau_decayMode[gentau_i]);
           }
 
           h1_Tau_h_reco->Fill(stau_lifetime);
@@ -244,6 +270,22 @@ int main(int argc, char * argv[])
                h1_Tau_h_byTightDeepTau_ratio->Fill(stau_lifetime);
              }
 
+        } else {
+          // if gentau does not not match
+          if(stau_lifetime>=0.01 && stau_lifetime<=0.0501)
+              DMm_0p01and0p05->Fill(8, maintree->gentau_decayMode[gentau_i]);
+          else if(stau_lifetime>=0.1 && stau_lifetime<=0.501)
+              DMm_0p1and0p5->Fill(8, maintree->gentau_decayMode[gentau_i]);
+          else if(stau_lifetime==1.0)
+              DMm_1p0->Fill(8, maintree->gentau_decayMode[gentau_i]);
+          else if(stau_lifetime==2.5)
+              DMm_2p5->Fill(8, maintree->gentau_decayMode[gentau_i]);
+          else if(stau_lifetime==5.0)
+              DMm_5p0->Fill(8, maintree->gentau_decayMode[gentau_i]);
+          else if(stau_lifetime==7.5)
+              DMm_7p5->Fill(8, maintree->gentau_decayMode[gentau_i]);
+          else if(stau_lifetime==10.0)
+              DMm_10p0->Fill(8, maintree->gentau_decayMode[gentau_i]);
         }
       }
     }
@@ -294,6 +336,13 @@ int main(int argc, char * argv[])
   h1_dm_5p0->Write();
   h1_dm_7p5->Write();
   h1_dm_10p0->Write();
+  DMm_0p01and0p05->Write();
+  DMm_0p1and0p5->Write();
+  DMm_1p0->Write();
+  DMm_2p5->Write();
+  DMm_5p0->Write();
+  DMm_7p5->Write();
+  DMm_10p0->Write();
   outputFile->Close();
 
   std::cout << "Good taus: " << goodTaus << std::endl;

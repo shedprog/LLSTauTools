@@ -283,10 +283,137 @@ def dmass_plot(file: ROOT.TFile) -> None:
 
     canvas.SaveAs('dmass_reco.pdf')
 
+def dm_migration(file: ROOT.TFile) -> None:
+
+    def normilize_xaxis(input_h: ROOT.TH2) -> ROOT.TH2:
+        normilized_h = input_h.Clone()
+        projection = hist.ProjectionY()
+        print("projection:", projection.GetXaxis().GetNbins())
+        for y_bin in range(input_h.GetYaxis().GetNbins()+2):
+            norm = projection.GetBinContent(y_bin)
+            print("norm: ", norm)
+            for x_bin in range(input_h.GetXaxis().GetNbins()+2):
+                if norm==0:
+                    normilized_h.SetBinContent(x_bin,y_bin,0)
+                else:
+                    normilized_h.SetBinContent(x_bin,y_bin,
+                        round(normilized_h.GetBinContent(x_bin,y_bin)/norm,2))
+        return normilized_h
+
+    ROOT.gStyle.SetOptStat(0);
+    labels = ['#pi', '#pi1#pi^{0}', '#pi2#pi^{0}','#pi Other','3#pi', '3#pi1#pi^{0}', '3#pi Other','rare','None']
+
+    canvas = ROOT.TCanvas('canvas', '', 1000, 1000)
+    canvas.cd()
+    hist = file.Get("DMm_0p01and0p05")
+    for y_bin in range(hist.GetYaxis().GetNbins()+2):
+        hist.SetBinContent(9,y_bin,0)
+    hist_new = normilize_xaxis(hist)
+    for y_bin in range(1, hist_new.GetYaxis().GetNbins()+1):
+        hist_new.GetYaxis().SetBinLabel(y_bin, labels[y_bin-1])
+    for x_bin in range(1, hist_new.GetXaxis().GetNbins()+1):
+        hist_new.GetXaxis().SetBinLabel(x_bin, labels[x_bin-1])
+    hist_new.GetYaxis().SetTitle('Gen DM')
+    hist_new.GetXaxis().SetTitle('Offline DM')
+    hist_new.Draw("coltext")
+    canvas.SaveAs('dm_migration1.pdf')
+    #
+    # canvas = ROOT.TCanvas('canvas', '', 1000, 1000)
+    # canvas.cd()
+    # hist = file.Get("DMm_0p1and0p5")
+    # for y_bin in range(hist.GetYaxis().GetNbins()+2):
+    #     hist.SetBinContent(9,y_bin,0)
+    # hist_new = normilize_xaxis(hist)
+    # for y_bin in range(1, hist_new.GetYaxis().GetNbins()+1):
+    #     hist_new.GetYaxis().SetBinLabel(y_bin, labels[y_bin-1])
+    # for x_bin in range(1, hist_new.GetXaxis().GetNbins()+1):
+    #     hist_new.GetXaxis().SetBinLabel(x_bin, labels[x_bin-1])
+    # hist_new.GetYaxis().SetTitle('Gen DM')
+    # hist_new.GetXaxis().SetTitle('Offline DM')
+    # hist_new.Draw("coltext")
+    # canvas.SaveAs('dm_migration2.pdf')
+    #
+    # canvas = ROOT.TCanvas('canvas', '', 1000, 1000)
+    # canvas.cd()
+    # hist = file.Get("DMm_1p0")
+    # for y_bin in range(hist.GetYaxis().GetNbins()+2):
+    #     hist.SetBinContent(9,y_bin,0)
+    # hist_new = normilize_xaxis(hist)
+    # for y_bin in range(1, hist_new.GetYaxis().GetNbins()+1):
+    #     hist_new.GetYaxis().SetBinLabel(y_bin, labels[y_bin-1])
+    # for x_bin in range(1, hist_new.GetXaxis().GetNbins()+1):
+    #     hist_new.GetXaxis().SetBinLabel(x_bin, labels[x_bin-1])
+    # hist_new.GetYaxis().SetTitle('Gen DM')
+    # hist_new.GetXaxis().SetTitle('Offline DM')
+    # hist_new.Draw("coltext")
+    # canvas.SaveAs('dm_migration3.pdf')
+    #
+    # canvas = ROOT.TCanvas('canvas', '', 1000, 1000)
+    # canvas.cd()
+    # hist = file.Get("DMm_2p5")
+    # for y_bin in range(hist.GetYaxis().GetNbins()+2):
+    #     hist.SetBinContent(9,y_bin,0)
+    # hist_new = normilize_xaxis(hist)
+    # for y_bin in range(1, hist_new.GetYaxis().GetNbins()+1):
+    #     hist_new.GetYaxis().SetBinLabel(y_bin, labels[y_bin-1])
+    # for x_bin in range(1, hist_new.GetXaxis().GetNbins()+1):
+    #     hist_new.GetXaxis().SetBinLabel(x_bin, labels[x_bin-1])
+    # hist_new.GetYaxis().SetTitle('Gen DM')
+    # hist_new.GetXaxis().SetTitle('Offline DM')
+    # hist_new.Draw("coltext")
+    # canvas.SaveAs('dm_migration4.pdf')
+    #
+    # canvas = ROOT.TCanvas('canvas', '', 1000, 1000)
+    # canvas.cd()
+    # hist = file.Get("DMm_5p0")
+    # for y_bin in range(hist.GetYaxis().GetNbins()+2):
+    #     hist.SetBinContent(9,y_bin,0)
+    # hist_new = normilize_xaxis(hist)
+    # for y_bin in range(1, hist_new.GetYaxis().GetNbins()+1):
+    #     hist_new.GetYaxis().SetBinLabel(y_bin, labels[y_bin-1])
+    # for x_bin in range(1, hist_new.GetXaxis().GetNbins()+1):
+    #     hist_new.GetXaxis().SetBinLabel(x_bin, labels[x_bin-1])
+    # hist_new.GetYaxis().SetTitle('Gen DM')
+    # hist_new.GetXaxis().SetTitle('Offline DM')
+    # hist_new.Draw("coltext")
+    # canvas.SaveAs('dm_migration5.pdf')
+    #
+    # canvas = ROOT.TCanvas('canvas', '', 1000, 1000)
+    # canvas.cd()
+    # hist = file.Get("DMm_7p5")
+    # for y_bin in range(hist.GetYaxis().GetNbins()+2):
+    #     hist.SetBinContent(9,y_bin,0)
+    # hist_new = normilize_xaxis(hist)
+    # for y_bin in range(1, hist_new.GetYaxis().GetNbins()+1):
+    #     hist_new.GetYaxis().SetBinLabel(y_bin, labels[y_bin-1])
+    # for x_bin in range(1, hist_new.GetXaxis().GetNbins()+1):
+    #     hist_new.GetXaxis().SetBinLabel(x_bin, labels[x_bin-1])
+    # hist_new.GetYaxis().SetTitle('Gen DM')
+    # hist_new.GetXaxis().SetTitle('Offline DM')
+    # hist_new.Draw("coltext")
+    # canvas.SaveAs('dm_migration6.pdf')
+    #
+    #
+    # canvas = ROOT.TCanvas('canvas', '', 1000, 1000)
+    # canvas.cd()
+    # hist = file.Get("DMm_10p0")
+    # for y_bin in range(hist.GetYaxis().GetNbins()+2):
+    #     hist.SetBinContent(9,y_bin,0)
+    # hist_new = normilize_xaxis(hist)
+    # for y_bin in range(1, hist_new.GetYaxis().GetNbins()+1):
+    #     hist_new.GetYaxis().SetBinLabel(y_bin, labels[y_bin-1])
+    # for x_bin in range(1, hist_new.GetXaxis().GetNbins()+1):
+    #     hist_new.GetXaxis().SetBinLabel(x_bin, labels[x_bin-1])
+    # hist_new.GetYaxis().SetTitle('Gen DM')
+    # hist_new.GetXaxis().SetTitle('Offline DM')
+    # hist_new.Draw("coltext")
+    # canvas.SaveAs('dm_migration7.pdf')
+
 file = ROOT.TFile.Open(str(sys.argv[1]), 'read')
-dpt_plot(file)
-deta_plot(file)
-dphi_plot(file)
-dmass_plot(file)
-id_plot(file)
+# dpt_plot(file)
+# deta_plot(file)
+# dphi_plot(file)
+# dmass_plot(file)
+# id_plot(file)
+dm_migration(file)
 file.Close()
