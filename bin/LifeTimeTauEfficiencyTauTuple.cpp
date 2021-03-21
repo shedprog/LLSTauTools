@@ -67,8 +67,19 @@ const int gen_dm_encode (unsigned int nCharged, unsigned int nNutral) // gen enc
   return 0;
 }
 
+bool dR_calc( const TLorentzVector& p4_1, const TLorentzVector& p4_2)
+{
+  float dr = 0.2;
+
+  float dr_new = ROOT::Math::VectorUtil::DeltaR( p4_1, p4_2 );
+
+  if(dr_new <= dr) return true;
+  else return false;
+}
+
 int main(int argc, char * argv[])
 {
+  using LorentzVectorXYZ = ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double>>;
 
   size_t number_of_files = strtol(argv[1], NULL, 10);
   std::vector<std::string> dirs;
@@ -88,10 +99,10 @@ int main(int argc, char * argv[])
   double up_lim = 200; // units?
 
   // Count identification histogram
-  TH2D *h1_Tau_h_all = new TH2D("h1_Tau_h_all","All hadronic taus delta_vtx",300,0,up_lim, 110, 0, 11);
-  TH2D *h1_Tau_h_reco = new TH2D("h1_Tau_h_reco","Reco hadronic taus delta_vtx",300,0,up_lim, 110, 0, 11);
-  TH2D *h1_Tau_h_all_t = new TH2D("h1_Tau_h_all_t","All hadronic taus delta_vtx_transverse",300,0,up_lim, 110, 0, 11);
-  TH2D *h1_Tau_h_reco_t = new TH2D("h1_Tau_h_reco_t","Reco hadronic taus delta_vtx_transverse",300,0,up_lim, 110, 0, 11);
+  TH2D *h1_Tau_h_all = new TH2D("h1_Tau_h_all","All hadronic taus delta_vtx",300,0,up_lim, 1000, 0, 1000);
+  TH2D *h1_Tau_h_reco = new TH2D("h1_Tau_h_reco","Reco hadronic taus delta_vtx",300,0,up_lim, 1000, 0, 1000);
+  TH2D *h1_Tau_h_all_t = new TH2D("h1_Tau_h_all_t","All hadronic taus delta_vtx_transverse",300,0,up_lim, 1000, 0, 1000);
+  TH2D *h1_Tau_h_reco_t = new TH2D("h1_Tau_h_reco_t","Reco hadronic taus delta_vtx_transverse",300,0,up_lim, 1000, 0, 1000);
 
   TH3D *h3_dm_disp = new TH3D("h3_dm_disp", "Decay Modes vs. taus delta_vt", 6,-0.5,5.5, // dm gen
                                                                              6,-0.5,5.5, // dm reco
@@ -114,17 +125,26 @@ int main(int argc, char * argv[])
     tauTuple->GetEntry(current_entry);
     const auto& entry = tauTuple->data();
 
-    if(entry.genLepton_kind==5) // to take only hadronic Taus
+    // std::cout << "Kind: "
+    // << entry.genLepton_kind << " "
+    // << entry.genLepton_vis_pt
+    // << std::endl;
+    //
+    // size_t n_gen_particles = entry.genParticle_pdgId.size();
+    // for(size_t gen_idx = 0; gen_idx < n_gen_particles; ++gen_idx)
+    // {
+    //
+    //   std::cout << "idx: " << gen_idx << " "
+    //   << "pdg: " << entry.genParticle_pdgId[gen_idx] << " "
+    //   << "mom idx: " << entry.genParticle_mother[gen_idx] << " "
+    //   << "last: " << entry.genParticle_isLastCopy[gen_idx] << " "
+    //   << std::endl;
+    // }
+    // std::cout << "--------------------------------------\n";
+    // std::cin.ignore();
+
+    if(entry.genLepton_kind==5 && entry.genLepton_vis_pt>=15.0) // to take only hadronic Taus
     {
-      // size_t n_gen_particles = entry.genParticle_pdgId.size();
-      // for(size_t gen_idx = 0; gen_idx < n_gen_particles; ++gen_idx)
-      // {
-      //   std::cout << "idx: " << gen_idx << " "
-      //             << "pdg: " << entry.genParticle_pdgId[gen_idx] << " "
-      //             << "mom idx: " << entry.genParticle_mother[gen_idx] << " "
-      //             << "last: " << entry.genParticle_isLastCopy[gen_idx] << " "
-      //             << std::endl;
-      // }
 
       auto genLeptons = reco_tau::gen_truth::GenLepton::fromRootTuple(
                          entry.genLepton_lastMotherIndex,
@@ -151,10 +171,10 @@ int main(int argc, char * argv[])
 
       for(auto genparticle_: all_gen_particles)
       {
-          if(std::abs(genparticle_.pdgId) == sourceParticlePdgId)
+          if(std::abs(genparticle_.pdgId) == 15 && genparticle_.isLastCopy)
           {
-            disp = genparticle_.getDistance();
-            disp_t = genparticle_.getTrDistance();
+              disp = genparticle_.vertex.r();
+              disp_t = genparticle_.vertex.rho();
           }
       }
       assert(disp != -9);
@@ -163,7 +183,13 @@ int main(int argc, char * argv[])
       h1_Tau_h_all->Fill(disp,entry.susy_ctau);
       h1_Tau_h_all_t->Fill(disp_t,entry.susy_ctau);
 
-      if(entry.tau_decayMode >= 0 && entry.tau_decayModeFindingNewDMs == 1) // if recontructed
+      TLorentzVector tau_p4;
+      tau_p4.SetPtEtaPhiM(entry.tau_pt, entry.tau_eta, entry.tau_phi, entry.tau_mass);
+      auto gen_p4 = genLeptons.visibleP4();
+      double dR = ROOT::Math::VectorUtil::DeltaR(tau_p4,gen_p4);
+
+      // if(entry.genLepton_index < 0 && entry.genJet_index >= 0) continue;
+      if(entry.tau_decayMode >= 0 && entry.tau_decayModeFindingNewDMs == 1 && dR<=0.2) // if recontructed
       {
         h1_Tau_h_reco->Fill(disp,entry.susy_ctau);
         h1_Tau_h_reco_t->Fill(disp_t,entry.susy_ctau);

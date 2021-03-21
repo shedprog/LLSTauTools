@@ -70,19 +70,6 @@ public:
     //                     std::pow(vertex.y()-daughter->vertex.y(),2) );
     // }
 
-    double getDistance() const {
-      const GenParticle* daughter = *daughters.begin(); // all daughters have same vertex
-      return std::sqrt( std::pow(daughter->vertex.x(),2) +
-                        std::pow(daughter->vertex.y(),2) +
-                        std::pow(daughter->vertex.z(),2) );
-    }
-
-    double getTrDistance() const {
-      const GenParticle* daughter = *daughters.begin(); // all daughters have same vertex
-      return std::sqrt( std::pow(daughter->vertex.x(),2) +
-                        std::pow(daughter->vertex.y(),2) );
-    }
-
 };
 
 inline std::ostream& operator<<(std::ostream& os, const GenParticle& p)

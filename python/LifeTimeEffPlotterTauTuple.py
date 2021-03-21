@@ -66,10 +66,10 @@ if __name__ == "__main__":
     h1_Tau_h_all_t = file.Get('h1_Tau_h_all_t').ProjectionX() # transverse plane displacement
     h1_Tau_h_reco_t = file.Get('h1_Tau_h_reco_t').ProjectionX() # transverse plane displacement
 
-    h1_Tau_h_all.GetXaxis().SetRangeUser(0.,150.)
-    h1_Tau_h_reco.GetXaxis().SetRangeUser(0.,150.)
-    h1_Tau_h_all_t.GetXaxis().SetRangeUser(0.,150.)
-    h1_Tau_h_reco_t.GetXaxis().SetRangeUser(0.,150.)
+    # h1_Tau_h_all.GetXaxis().SetRangeUser(0.,150.)
+    # h1_Tau_h_reco.GetXaxis().SetRangeUser(0.,150.)
+    # h1_Tau_h_all_t.GetXaxis().SetRangeUser(0.,150.)
+    # h1_Tau_h_reco_t.GetXaxis().SetRangeUser(0.,150.)
 
     # h1_Tau_h_all.SetMinimum(0.9)
     # h1_Tau_h_reco.SetMinimum(0.9)
@@ -147,25 +147,5 @@ if __name__ == "__main__":
 
     canvas.SaveAs('out/dm_migration.pdf')
 
-
-    # lifetime vs. displacement checks --------------------->
-    canvas = ROOT.TCanvas('canvas', '', 1000, 500)
-    ROOT.gStyle.SetOptStat(11);
-    lifetimes = [0.05, 0.1, 0.5, 1, 2.5, 5, 7.5, 10]
-    canvas.Divide(4,2,0,0)
-
-    h2_Tau_h_all = file.Get('h1_Tau_h_all')
-
-    r = 0.05 #%
-    for i, lt in enumerate(lifetimes):
-        LifeTimePlot = file.Get('h1_Tau_h_all').ProjectionX("lt"+str(i),
-            h2_Tau_h_all.GetYaxis().FindBin(lt-r*lt),h2_Tau_h_all.GetYaxis().FindBin(lt+r*lt))
-        canvas.cd(i+1)
-        ROOT.gPad.SetLogy()
-        LifeTimePlot.SetTitle("ctau="+str(lt))
-        LifeTimePlot.GetXaxis().SetRangeUser(0.,100.)
-        LifeTimePlot.GetXaxis().SetTitle("#delta vtx [units]")
-        LifeTimePlot.Draw()
-    canvas.SaveAs('out/lifetimes.pdf')
 
     file.Close()
