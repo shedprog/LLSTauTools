@@ -77,19 +77,24 @@ bool dR_calc( const TLorentzVector& p4_1, const TLorentzVector& p4_2)
   else return false;
 }
 
+void info(const Tau& entry);
+
 int main(int argc, char * argv[])
 {
   using LorentzVectorXYZ = ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double>>;
 
-  size_t number_of_files = strtol(argv[1], NULL, 10);
+  std::string outfile_name = argv[1];
+  size_t number_of_files = strtol(argv[2], NULL, 10);
   std::vector<std::string> dirs;
-  for (size_t i = 2; i < argc; ++i) dirs.push_back(argv[i]);
+  for (size_t i = 3; i < argc; ++i) dirs.push_back(argv[i]);
   std::vector<std::string> root_files_all(FindInputFiles(dirs,"^.*\\.root$","",""));
   size_t number_to_read = 0;
   if(number_of_files>=0) number_to_read = std::min(number_of_files,root_files_all.size());
   else number_to_read = root_files_all.size();
 
   std::vector<std::string> root_files(root_files_all.end() - std::min(root_files_all.size(), number_to_read), root_files_all.end());
+
+  for(auto file: root_files) std::cout << file << std::endl;
 
   std::cout << "Number of files to process: " << root_files.size() << std::endl;
   auto tauTuple = std::make_shared<TauTuple>("taus", root_files);
@@ -103,6 +108,11 @@ int main(int argc, char * argv[])
   TH2D *h1_Tau_h_reco = new TH2D("h1_Tau_h_reco","Reco hadronic taus delta_vtx",300,0,up_lim, 1000, 0, 1000);
   TH2D *h1_Tau_h_all_t = new TH2D("h1_Tau_h_all_t","All hadronic taus delta_vtx_transverse",300,0,up_lim, 1000, 0, 1000);
   TH2D *h1_Tau_h_reco_t = new TH2D("h1_Tau_h_reco_t","Reco hadronic taus delta_vtx_transverse",300,0,up_lim, 1000, 0, 1000);
+
+  TH2D *h1_Tau_genpt_all = new TH2D("h1_Tau_genpt_all","All hadronic taus delta_vtx",300,0,up_lim, 1000, 0, 1000);
+  TH2D *h1_Tau_genpt_reco = new TH2D("h1_Tau_genpt_reco","Reco hadronic taus delta_vtx",300,0,up_lim, 1000, 0, 1000);
+  TH2D *h1_Tau_genpt_all_t = new TH2D("h1_Tau_genpt_all_t","All hadronic taus delta_vtx_transverse",300,0,up_lim, 1000, 0, 1000);
+  TH2D *h1_Tau_genpt_reco_t = new TH2D("h1_Tau_genpt_reco_t","Reco hadronic taus delta_vtx_transverse",300,0,up_lim, 1000, 0, 1000);
 
   TH3D *h3_dm_disp = new TH3D("h3_dm_disp", "Decay Modes vs. taus delta_vt", 6,-0.5,5.5, // dm gen
                                                                              6,-0.5,5.5, // dm reco
@@ -130,16 +140,24 @@ int main(int argc, char * argv[])
     // << entry.genLepton_vis_pt
     // << std::endl;
     //
-    // size_t n_gen_particles = entry.genParticle_pdgId.size();
-    // for(size_t gen_idx = 0; gen_idx < n_gen_particles; ++gen_idx)
-    // {
-    //
-    //   std::cout << "idx: " << gen_idx << " "
-    //   << "pdg: " << entry.genParticle_pdgId[gen_idx] << " "
-    //   << "mom idx: " << entry.genParticle_mother[gen_idx] << " "
-    //   << "last: " << entry.genParticle_isLastCopy[gen_idx] << " "
-    //   << std::endl;
-    // }
+    std::cout << std::endl;
+    std::cout << "event number :" << entry.evt << std::endl;
+
+    size_t n_gen_particles = entry.genParticle_pdgId.size();
+    for(size_t gen_idx = 0; gen_idx < n_gen_particles; ++gen_idx)
+    {
+
+      std::cout  << "idx: " << gen_idx << " "
+      << "pdgId: " << entry.genParticle_pdgId[gen_idx] << " "
+      << "pt: " << entry.genParticle_pt[gen_idx] << " "
+      << "eta: " << entry.genParticle_eta[gen_idx] << " "
+      << "phi: " << entry.genParticle_phi[gen_idx] << " "
+      << " vtx "
+      << " " << entry.genParticle_vtx_x[gen_idx]
+      << " " << entry.genParticle_vtx_y[gen_idx]
+      << " " << entry.genParticle_vtx_z[gen_idx]
+      << std::endl;
+    }
     // std::cout << "--------------------------------------\n";
     // std::cin.ignore();
 
@@ -160,8 +178,6 @@ int main(int argc, char * argv[])
                          entry.genParticle_vtx_x,
                          entry.genParticle_vtx_y,
                          entry.genParticle_vtx_z);
-      // std::cout << std::endl;
-      // genLeptons.PrintDecay(std::cout);
 
       const std::vector<reco_tau::gen_truth::GenParticle>& all_gen_particles = genLeptons.allParticles();
       int genTauDecayMode = gen_dm_encode(genLeptons.nChargedHadrons(), genLeptons.nNeutralHadrons());
@@ -180,8 +196,17 @@ int main(int argc, char * argv[])
       assert(disp != -9);
       assert(disp_t != -9);
 
+      if(disp >= 500 && entry.tau_decayMode==0 && genTauDecayMode==1){
+        std::cout << std::endl;
+        std::cout << "event number :" << entry.evt << " Lumi: " << entry.lumi << std::endl;
+        genLeptons.PrintDecay(std::cout);
+        info(entry);
+      }
+
       h1_Tau_h_all->Fill(disp,entry.susy_ctau);
       h1_Tau_h_all_t->Fill(disp_t,entry.susy_ctau);
+      h1_Tau_genpt_all->Fill(disp,gentau_pt);
+      h1_Tau_genpt_all_t->Fill(disp_t,gentau_pt);
 
       TLorentzVector tau_p4;
       tau_p4.SetPtEtaPhiM(entry.tau_pt, entry.tau_eta, entry.tau_phi, entry.tau_mass);
@@ -193,6 +218,8 @@ int main(int argc, char * argv[])
       {
         h1_Tau_h_reco->Fill(disp,entry.susy_ctau);
         h1_Tau_h_reco_t->Fill(disp_t,entry.susy_ctau);
+        h1_Tau_genpt_reco->Fill(disp,gentau_pt);
+        h1_Tau_genpt_reco_t->Fill(disp_t,gentau_pt);
         h3_dm_disp->Fill(genTauDecayMode, dm_encode.at(entry.tau_decayMode), disp);
         h3_dm_disp_t->Fill(genTauDecayMode, dm_encode.at(entry.tau_decayMode), disp_t);
         h2_pt_disp->Fill(1.0 - entry.tau_pt/gentau_pt, disp);
@@ -201,11 +228,15 @@ int main(int argc, char * argv[])
     }
   }
 
-  TFile *outputFile = new TFile("LifeTimeEfficiency.root","RECREATE");
+  TFile *outputFile = new TFile(outfile_name.c_str(),"RECREATE");
   h1_Tau_h_all->Write();
   h1_Tau_h_reco->Write();
   h1_Tau_h_all_t->Write();
   h1_Tau_h_reco_t->Write();
+  h1_Tau_genpt_all->Write();
+  h1_Tau_genpt_reco->Write();
+  h1_Tau_genpt_all_t->Write();
+  h1_Tau_genpt_reco_t->Write();
   h3_dm_disp->Write();
   h2_pt_disp->Write();
   h3_dm_disp_t->Write();
@@ -214,4 +245,59 @@ int main(int argc, char * argv[])
 
   std::cout << "The StauEfficiency for TauTuple is executed!" << std::endl;
   return 0;
+}
+
+void info(const Tau& entry) {
+
+  std::cout << "\nReco Tau:\n"
+            << "pt: " << entry.tau_pt << " eta: " << entry.tau_eta << " phi: " << entry.tau_phi
+            << " DM:" << entry.tau_decayMode
+            << " vtx: " << entry.tau_sv_x << " " << entry.tau_sv_y << " " <<  entry.tau_sv_z
+            << std::endl << std::endl;
+
+  std::cout << "Lost Track:\n";
+
+  for(int track_i=0; track_i <= entry.lostTrack_track_pt.size(); track_i++ ) {
+  if(entry.lostTrack_tauSignal[track_i]!=1) continue;
+  std::cout
+            << "pt: " << entry.lostTrack_track_pt[track_i] << " eta: " << entry.lostTrack_track_eta[track_i] << " phi: " << entry.lostTrack_track_phi[track_i]
+            << " charge: " << entry.lostTrack_charge[track_i]
+            << " vtx: " << entry.lostTrack_vertex_x[track_i] << " " << entry.lostTrack_vertex_y[track_i] << " " << entry.lostTrack_vertex_z[track_i] << " " << entry.lostTrack_vertex_t[track_i] << " "
+            << " nHits: " << entry.lostTrack_nHits[track_i]
+            << " nPixelLayers: " << entry.lostTrack_nPixelLayers[track_i]
+            << " nStripLayers: " << entry.lostTrack_nStripLayers[track_i]
+            << " Tau Signal: " << entry.lostTrack_tauSignal[track_i]
+            << std::endl;
+  }
+
+  std::cout << "PfCand Track:\n";
+
+  for(int track_i=0; track_i <= entry.pfCand_track_pt.size(); track_i++ ) {
+  if(entry.pfCand_tauSignal[track_i]!=1) continue;
+  std::cout
+            << "pt: " << entry.pfCand_track_pt[track_i] << " eta: " << entry.pfCand_track_eta[track_i] << " phi: " << entry.pfCand_track_phi[track_i]
+            << " charge: " << entry.pfCand_charge[track_i]
+            << " vtx: " << entry.pfCand_vertex_x[track_i] << " " << entry.pfCand_vertex_y[track_i] << " " << entry.pfCand_vertex_z[track_i] << " " << entry.pfCand_vertex_t[track_i] << " "
+            << " nHits: " << entry.pfCand_nHits[track_i]
+            << " nPixelLayers: " << entry.pfCand_nPixelLayers[track_i]
+            << " nStripLayers: " << entry.pfCand_nStripLayers[track_i]
+            << " Tau Signal: " << entry.lostTrack_tauSignal[track_i]
+            << std::endl;
+  }
+  std::cout << "Iso Track:\n";
+
+  for(int track_i=0; track_i <= entry.isoTrack_index.size(); track_i++ ) {
+  // if(entry.isoTrack_tauSignal[track_i]!=1) continue;
+  std::cout
+            << "pt: " << entry.isoTrack_pt[track_i] << " eta: " << entry.isoTrack_eta[track_i] << " phi: " << entry.isoTrack_phi[track_i]
+            << " charge: " << entry.isoTrack_charge[track_i] << " n_ValidHits: " << entry.isoTrack_n_ValidHits[track_i]
+            << " n_ValidMuonHits: " << entry.isoTrack_n_ValidMuonHits[track_i]
+            << " n_ValidPixelHits: " << entry.isoTrack_n_ValidPixelHits[track_i]
+            << " n_ValidStripHits: " << entry.isoTrack_n_ValidStripHits[track_i]
+            << std::endl;
+  }
+
+
+    std::cout << "--------------------------------------\n";
+    std::cin.ignore();
 }
