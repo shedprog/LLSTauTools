@@ -26,7 +26,7 @@ source ./scripts/gc_FailDataChecker.sh /nfs/dust/cms/user/mykytaua/softLLSTAU/NT
 
 To Run GEN-SIM-RECO checks:
 ```sh
-cmsRun python/FWLite_GEN-SIM-RECO.py 
+cmsRun python/FWLite_GEN-SIM-RECO.py
 ```
 
 Some code is copy from the following repos:

@@ -126,6 +126,9 @@ int main(int argc, char * argv[])
   TH2D *h2_pt_disp_t = new TH2D("h3_pt_disp_t", "1 - pt_reco/pt_gen vs. taus delta_vt_t", 100,-2.0,2.0, // 1 - pt_reco/pt_gen
                                                                                           300,0,up_lim); // life time
 
+  TH2D *pixhits_reco_disp = new TH2D("pixhits_reco_disp", "N hits in PIX (for reco tau tracks) vs. displ.", 200,0,100, 50, 0, 50);
+  TH2D *pixhits_reco_disp_t = new TH2D("pixhits_reco_disp_t", "N hits in PIX (for reco tau tracks) vs. tr displ.", 200,0,100, 50, 0, 50);
+
   for(size_t current_entry = 0; current_entry < n_entries; ++current_entry)
   {
     if(current_entry % 10000 == 0) std::cout << "Events processed: " << current_entry << " ("
@@ -135,31 +138,24 @@ int main(int argc, char * argv[])
     tauTuple->GetEntry(current_entry);
     const auto& entry = tauTuple->data();
 
-    // std::cout << "Kind: "
-    // << entry.genLepton_kind << " "
-    // << entry.genLepton_vis_pt
-    // << std::endl;
+    // std::cout << std::endl;
+    // std::cout << "event number :" << entry.evt << std::endl;
     //
-    std::cout << std::endl;
-    std::cout << "event number :" << entry.evt << std::endl;
-
-    size_t n_gen_particles = entry.genParticle_pdgId.size();
-    for(size_t gen_idx = 0; gen_idx < n_gen_particles; ++gen_idx)
-    {
-
-      std::cout  << "idx: " << gen_idx << " "
-      << "pdgId: " << entry.genParticle_pdgId[gen_idx] << " "
-      << "pt: " << entry.genParticle_pt[gen_idx] << " "
-      << "eta: " << entry.genParticle_eta[gen_idx] << " "
-      << "phi: " << entry.genParticle_phi[gen_idx] << " "
-      << " vtx "
-      << " " << entry.genParticle_vtx_x[gen_idx]
-      << " " << entry.genParticle_vtx_y[gen_idx]
-      << " " << entry.genParticle_vtx_z[gen_idx]
-      << std::endl;
-    }
-    // std::cout << "--------------------------------------\n";
-    // std::cin.ignore();
+    // size_t n_gen_particles = entry.genParticle_pdgId.size();
+    // for(size_t gen_idx = 0; gen_idx < n_gen_particles; ++gen_idx)
+    // {
+    //
+    //   std::cout  << "idx: " << gen_idx << " "
+    //   << "pdgId: " << entry.genParticle_pdgId[gen_idx] << " "
+    //   << "pt: " << entry.genParticle_pt[gen_idx] << " "
+    //   << "eta: " << entry.genParticle_eta[gen_idx] << " "
+    //   << "phi: " << entry.genParticle_phi[gen_idx] << " "
+    //   << " vtx "
+    //   << " " << entry.genParticle_vtx_x[gen_idx]
+    //   << " " << entry.genParticle_vtx_y[gen_idx]
+    //   << " " << entry.genParticle_vtx_z[gen_idx]
+    //   << std::endl;
+    // }
 
     if(entry.genLepton_kind==5 && entry.genLepton_vis_pt>=15.0) // to take only hadronic Taus
     {
@@ -196,12 +192,12 @@ int main(int argc, char * argv[])
       assert(disp != -9);
       assert(disp_t != -9);
 
-      if(disp >= 500 && entry.tau_decayMode==0 && genTauDecayMode==1){
-        std::cout << std::endl;
-        std::cout << "event number :" << entry.evt << " Lumi: " << entry.lumi << std::endl;
-        genLeptons.PrintDecay(std::cout);
-        info(entry);
-      }
+      // if(disp >= 500 && entry.tau_decayMode==0 && genTauDecayMode==1){
+        // std::cout << std::endl;
+        // std::cout << "event number :" << entry.evt << " Lumi: " << entry.lumi << std::endl;
+        // genLeptons.PrintDecay(std::cout);
+        // info(entry);
+      // }
 
       h1_Tau_h_all->Fill(disp,entry.susy_ctau);
       h1_Tau_h_all_t->Fill(disp_t,entry.susy_ctau);
@@ -216,6 +212,18 @@ int main(int argc, char * argv[])
       // if(entry.genLepton_index < 0 && entry.genJet_index >= 0) continue;
       if(entry.tau_decayMode >= 0 && entry.tau_decayModeFindingNewDMs == 1 && dR<=0.2) // if recontructed
       {
+
+        Int_t nHits = 0;
+        for(int track_i=0; track_i <= entry.pfCand_track_pt.size(); track_i++ ) {
+          if(entry.pfCand_tauSignal[track_i]!=1) continue;
+          nHits += entry.pfCand_nPixelHits[track_i];
+        }
+        if(entry.pfCand_track_pt.size()!=0){
+          pixhits_reco_disp->Fill(disp,nHits);
+          pixhits_reco_disp_t->Fill(disp_t,nHits);
+        }
+
+
         h1_Tau_h_reco->Fill(disp,entry.susy_ctau);
         h1_Tau_h_reco_t->Fill(disp_t,entry.susy_ctau);
         h1_Tau_genpt_reco->Fill(disp,gentau_pt);
@@ -241,6 +249,8 @@ int main(int argc, char * argv[])
   h2_pt_disp->Write();
   h3_dm_disp_t->Write();
   h2_pt_disp_t->Write();
+  pixhits_reco_disp->Write();
+  pixhits_reco_disp_t->Write();
   outputFile->Close();
 
   std::cout << "The StauEfficiency for TauTuple is executed!" << std::endl;
