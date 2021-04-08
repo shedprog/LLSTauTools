@@ -192,11 +192,11 @@ int main(int argc, char * argv[])
       assert(disp != -9);
       assert(disp_t != -9);
 
-      // if(disp >= 500 && entry.tau_decayMode==0 && genTauDecayMode==1){
-        // std::cout << std::endl;
-        // std::cout << "event number :" << entry.evt << " Lumi: " << entry.lumi << std::endl;
-        // genLeptons.PrintDecay(std::cout);
-        // info(entry);
+      // if(disp >= 40 && entry.tau_decayMode==0 && genTauDecayMode==1){
+      //   std::cout << std::endl;
+      //   std::cout << "event number :" << entry.evt << " Lumi: " << entry.lumi << std::endl;
+      //   genLeptons.PrintDecay(std::cout);
+      //   info(entry);
       // }
 
       h1_Tau_h_all->Fill(disp,entry.susy_ctau);
@@ -209,16 +209,19 @@ int main(int argc, char * argv[])
       auto gen_p4 = genLeptons.visibleP4();
       double dR = ROOT::Math::VectorUtil::DeltaR(tau_p4,gen_p4);
 
+
       // if(entry.genLepton_index < 0 && entry.genJet_index >= 0) continue;
       if(entry.tau_decayMode >= 0 && entry.tau_decayModeFindingNewDMs == 1 && dR<=0.2) // if recontructed
       {
 
         Int_t nHits = 0;
-        for(int track_i=0; track_i <= entry.pfCand_track_pt.size(); track_i++ ) {
+        bool reco_track = 0;
+        for(int track_i=0; track_i < entry.pfCand_track_pt.size(); track_i++ ) {
           if(entry.pfCand_tauSignal[track_i]!=1) continue;
           nHits += entry.pfCand_nPixelHits[track_i];
+          reco_track = 1;
         }
-        if(entry.pfCand_track_pt.size()!=0){
+        if(entry.pfCand_track_pt.size()!=0 && reco_track==1){
           pixhits_reco_disp->Fill(disp,nHits);
           pixhits_reco_disp_t->Fill(disp_t,nHits);
         }
@@ -226,10 +229,13 @@ int main(int argc, char * argv[])
 
         h1_Tau_h_reco->Fill(disp,entry.susy_ctau);
         h1_Tau_h_reco_t->Fill(disp_t,entry.susy_ctau);
+
         h1_Tau_genpt_reco->Fill(disp,gentau_pt);
         h1_Tau_genpt_reco_t->Fill(disp_t,gentau_pt);
+
         h3_dm_disp->Fill(genTauDecayMode, dm_encode.at(entry.tau_decayMode), disp);
         h3_dm_disp_t->Fill(genTauDecayMode, dm_encode.at(entry.tau_decayMode), disp_t);
+
         h2_pt_disp->Fill(1.0 - entry.tau_pt/gentau_pt, disp);
         h2_pt_disp_t->Fill(1.0 - entry.tau_pt/gentau_pt, disp_t);
       }
@@ -267,7 +273,7 @@ void info(const Tau& entry) {
 
   std::cout << "Lost Track:\n";
 
-  for(int track_i=0; track_i <= entry.lostTrack_track_pt.size(); track_i++ ) {
+  for(int track_i=0; track_i < entry.lostTrack_track_pt.size(); track_i++ ) {
   if(entry.lostTrack_tauSignal[track_i]!=1) continue;
   std::cout
             << "pt: " << entry.lostTrack_track_pt[track_i] << " eta: " << entry.lostTrack_track_eta[track_i] << " phi: " << entry.lostTrack_track_phi[track_i]
@@ -282,7 +288,7 @@ void info(const Tau& entry) {
 
   std::cout << "PfCand Track:\n";
 
-  for(int track_i=0; track_i <= entry.pfCand_track_pt.size(); track_i++ ) {
+  for(int track_i=0; track_i < entry.pfCand_track_pt.size(); track_i++ ) {
   if(entry.pfCand_tauSignal[track_i]!=1) continue;
   std::cout
             << "pt: " << entry.pfCand_track_pt[track_i] << " eta: " << entry.pfCand_track_eta[track_i] << " phi: " << entry.pfCand_track_phi[track_i]
@@ -296,7 +302,7 @@ void info(const Tau& entry) {
   }
   std::cout << "Iso Track:\n";
 
-  for(int track_i=0; track_i <= entry.isoTrack_index.size(); track_i++ ) {
+  for(int track_i=0; track_i < entry.isoTrack_index.size(); track_i++ ) {
   // if(entry.isoTrack_tauSignal[track_i]!=1) continue;
   std::cout
             << "pt: " << entry.isoTrack_pt[track_i] << " eta: " << entry.isoTrack_eta[track_i] << " phi: " << entry.isoTrack_phi[track_i]
