@@ -1,5 +1,6 @@
 from DataFormats.FWLite import Events, Handle
 import ROOT
+import numpy as np
 
 if __name__ == '__main__':
 
@@ -13,11 +14,11 @@ if __name__ == '__main__':
     labelTracks = 'g4SimHits'
 
     # Hists check part
-    # handleHits = Handle('vector<PSimHit> ')
-    # labelsHits = [ "TrackerHitsPixelBarrelHighTof",
-    #                "TrackerHitsPixelBarrelLowTof",
-    #                "TrackerHitsPixelEndcapHighTof",
-    #                "TrackerHitsPixelEndcapLowTof" ]
+    handleHits = Handle('std::vector<PSimHit> ')
+    labelsHits = [ "TrackerHitsPixelBarrelHighTof",
+                   "TrackerHitsPixelBarrelLowTof",
+                   "TrackerHitsPixelEndcapHighTof",
+                   "TrackerHitsPixelEndcapLowTof" ]
 
     n_ev = 0
     for n_ev, ev in enumerate(events):
@@ -32,8 +33,19 @@ if __name__ == '__main__':
         ev.getByLabel(labelTracks, handleTracks)
         tracks = handleTracks.product()
 
+        Tracker_nHits = np.zeros((4,1600000), dtype=int)
+
+        for i, label in enumerate(labelsHits):
+            '''
+            In this part, hits inside PIXEL tracker
+            are accumulated
+            '''
+            ev.getByLabel(labelTracks, label, handleHits)
+            hits = handleHits.product()
+            for hit in hits:
+                Tracker_nHits[i][hit.trackId()]+=1
+
         for tr in tracks:
-            print tr.trackId(), tr.ivert
             '''
             This part checks:
             1.  If there is a track which coresponds to genParticle
@@ -42,7 +54,9 @@ if __name__ == '__main__':
             2.  If there is a track which coresponds to stau (pdgId == 1000015)
             '''
             dis_transv = 500.0
+
             if tr.genpartIndex() >= 0:
+
                 if(gen_particle[tr.genpartIndex()-1].vertex().rho()>=dis_transv \
                    and (gen_particle[tr.genpartIndex()-1].vertex().x()<0) == (gen_particle[tr.genpartIndex()-1].momentum().x()<0) \
                    and (gen_particle[tr.genpartIndex()-1].vertex().y()<0) == (gen_particle[tr.genpartIndex()-1].momentum().y()<0) \
@@ -51,22 +65,17 @@ if __name__ == '__main__':
                     print ">"+str(dis_transv)+"[cm] transverse plane: ", \
                         "pdgId: ", gen_particle[tr.genpartIndex()-1].pdgId(), \
                         "vtx rho: ", gen_particle[tr.genpartIndex()-1].vertex().rho(), \
-                        "vtx abs: ", gen_particle[tr.genpartIndex()-1].vertex().r()
+                        "vtx abs: ", gen_particle[tr.genpartIndex()-1].vertex().r(), \
+                        "PixelBarrelHighTof: ", Tracker_nHits[0][tr.trackId()], \
+                        "PixelBarrelLowTof: ", Tracker_nHits[1][tr.trackId()], \
+                        "PixelEndcapHighTof: ", Tracker_nHits[2][tr.trackId()], \
+                        "PixelEndcapLowTof: ", Tracker_nHits[3][tr.trackId()]
 
-                if(gen_particle[tr.genpartIndex()-1].pdgId()==1000015 or gen_particle[tr.genpartIndex()-1].pdgId()==-1000015):
+                if(abs(gen_particle[tr.genpartIndex()-1].pdgId())>=1000000):
 
                     print "stau particle track!: ~~~~~~~~~~~~> ", \
                         "pdgId: ", gen_particle[tr.genpartIndex()-1].pdgId(), \
                         "vtx rho: ", gen_particle[tr.genpartIndex()-1].vertex().rho(), \
                         "vtx abs: ", gen_particle[tr.genpartIndex()-1].vertex().r()
 
-
-        # for hitlab_ in labelsHits:
-        #     ev.getByLabel(labelTracks, hitlab_, handleHits)
-        #     hits = handleHits.product()
-        #     for hit in hits:
-        #         # trackId() is not track index
-        #         print tracks[hit.trackId()-1].genpartIndex()
-
-
-        exit()
+        # exit()
