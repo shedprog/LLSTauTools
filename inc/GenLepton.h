@@ -57,6 +57,12 @@ public:
 
     PdgId pdgCode() const { return static_cast<PdgId>(std::abs(pdgId)); }
 
+    double getDistance() const {
+      const GenParticle* mother = *mothers.begin();
+      return std::sqrt( std::pow(vertex.x()-mother->vertex.x(),2) +
+                        std::pow(vertex.y()-mother->vertex.y(),2) +
+                        std::pow(vertex.z()-mother->vertex.z(),2) );
+    }
     // double getDistance() const {
     //   const GenParticle* daughter = *daughters.begin(); // all daughters have same vertex
     //   return std::sqrt( std::pow(vertex.x()-daughter->vertex.x(),2) +

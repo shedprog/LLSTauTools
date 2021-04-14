@@ -29,6 +29,6 @@ To Run GEN-SIM-RECO checks:
 cmsRun python/FWLite_GEN-SIM-RECO.py
 ```
 
-Some code is copy from the following repos:
+Some code is copy from the following repos: 
 https://github.com/cms-tau-pog/TauMLTools  
 https://github.com/DesyTau/DesyTauAnalysesRun2_25ns  

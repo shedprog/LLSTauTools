@@ -66,21 +66,28 @@ if __name__ == "__main__":
     h1_Tau_h_all_t = file.Get('h1_Tau_h_all_t').ProjectionX() # transverse plane displacement
     h1_Tau_h_reco_t = file.Get('h1_Tau_h_reco_t').ProjectionX() # transverse plane displacement
 
-    # h1_Tau_h_all.GetXaxis().SetRangeUser(0.,150.)
-    # h1_Tau_h_reco.GetXaxis().SetRangeUser(0.,150.)
-    # h1_Tau_h_all_t.GetXaxis().SetRangeUser(0.,150.)
-    # h1_Tau_h_reco_t.GetXaxis().SetRangeUser(0.,150.)
+    # h1_Tau_h_all.GetXaxis().SetLimits(0,10)
+    # h1_Tau_h_reco.GetXaxis().SetLimits(0,10)
+    # h1_Tau_h_all_t.GetXaxis().SetLimits(0,10)
+    # h1_Tau_h_reco_t.GetXaxis().SetLimits(0,10)
+
 
     # h1_Tau_h_all.SetMinimum(0.9)
     # h1_Tau_h_reco.SetMinimum(0.9)
     # h1_Tau_h_all_t.SetMinimum(0.9)
     # h1_Tau_h_reco_t.SetMinimum(0.9)
 
-    h1_Tau_h_all.Rebin(5)
-    h1_Tau_h_reco.Rebin(5)
-    h1_Tau_h_all_t.Rebin(5)
-    h1_Tau_h_reco_t.Rebin(5)
+    MergeBin = 1
+    h1_Tau_h_all.Rebin(MergeBin)
+    h1_Tau_h_reco.Rebin(MergeBin)
+    h1_Tau_h_all_t.Rebin(MergeBin)
+    h1_Tau_h_reco_t.Rebin(MergeBin)
 
+    h1_Tau_h_all.GetXaxis().SetRangeUser(0.,5.)
+    h1_Tau_h_reco.GetXaxis().SetRangeUser(0.,5.)
+    h1_Tau_h_all_t.GetXaxis().SetRangeUser(0.,5.)
+    h1_Tau_h_reco_t.GetXaxis().SetRangeUser(0.,5.)
+    
     # abs delta vertex
     h1_ratio_reco = createRatio(h1_Tau_h_reco, h1_Tau_h_all,"h3")
 
@@ -90,7 +97,9 @@ if __name__ == "__main__":
     h1_Tau_h_all.GetYaxis().SetTitle("entries")
     h1_Tau_h_reco.SetLineColor(2)
     pad1.cd()
-    pad1.SetLogy();
+    pad1.SetLogy()
+    h1_Tau_h_all.SetMinimum(0.5)
+    h1_Tau_h_reco.SetMinimum(0.5)
     h1_Tau_h_all.Draw()
     h1_Tau_h_reco.Draw("same")
     pad2.cd()
@@ -107,7 +116,9 @@ if __name__ == "__main__":
     h1_Tau_h_all_t.GetYaxis().SetTitle("entries")
     h1_Tau_h_reco_t.SetLineColor(2)
     pad1.cd()
-    pad1.SetLogy();
+    pad1.SetLogy()
+    h1_Tau_h_all_t.SetMinimum(0.5)
+    h1_Tau_h_reco_t.SetMinimum(0.5)
     h1_Tau_h_all_t.Draw()
     h1_Tau_h_reco_t.Draw("same")
     pad2.cd()

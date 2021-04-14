@@ -104,30 +104,30 @@ int main(int argc, char * argv[])
   double up_lim = 200; // units?
 
   // Count identification histogram
-  TH2D *h1_Tau_h_all = new TH2D("h1_Tau_h_all","All hadronic taus delta_vtx",300,0,up_lim, 1000, 0, 1000);
-  TH2D *h1_Tau_h_reco = new TH2D("h1_Tau_h_reco","Reco hadronic taus delta_vtx",300,0,up_lim, 1000, 0, 1000);
-  TH2D *h1_Tau_h_all_t = new TH2D("h1_Tau_h_all_t","All hadronic taus delta_vtx_transverse",300,0,up_lim, 1000, 0, 1000);
-  TH2D *h1_Tau_h_reco_t = new TH2D("h1_Tau_h_reco_t","Reco hadronic taus delta_vtx_transverse",300,0,up_lim, 1000, 0, 1000);
+  TH2D *h1_Tau_h_all = new TH2D("h1_Tau_h_all","All hadronic taus delta_vtx",2000,0,up_lim, 1000, 0, 1000);
+  TH2D *h1_Tau_h_reco = new TH2D("h1_Tau_h_reco","Reco hadronic taus delta_vtx",2000,0,up_lim, 1000, 0, 1000);
+  TH2D *h1_Tau_h_all_t = new TH2D("h1_Tau_h_all_t","All hadronic taus delta_vtx_transverse",2000,0,up_lim, 1000, 0, 1000);
+  TH2D *h1_Tau_h_reco_t = new TH2D("h1_Tau_h_reco_t","Reco hadronic taus delta_vtx_transverse",2000,0,up_lim, 1000, 0, 1000);
 
-  TH2D *h1_Tau_genpt_all = new TH2D("h1_Tau_genpt_all","All hadronic taus delta_vtx",300,0,up_lim, 1000, 0, 1000);
-  TH2D *h1_Tau_genpt_reco = new TH2D("h1_Tau_genpt_reco","Reco hadronic taus delta_vtx",300,0,up_lim, 1000, 0, 1000);
-  TH2D *h1_Tau_genpt_all_t = new TH2D("h1_Tau_genpt_all_t","All hadronic taus delta_vtx_transverse",300,0,up_lim, 1000, 0, 1000);
-  TH2D *h1_Tau_genpt_reco_t = new TH2D("h1_Tau_genpt_reco_t","Reco hadronic taus delta_vtx_transverse",300,0,up_lim, 1000, 0, 1000);
+  TH2D *h1_Tau_genpt_all = new TH2D("h1_Tau_genpt_all","All hadronic taus delta_vtx",2000,0,up_lim, 1000, 0, 1000);
+  TH2D *h1_Tau_genpt_reco = new TH2D("h1_Tau_genpt_reco","Reco hadronic taus delta_vtx",2000,0,up_lim, 1000, 0, 1000);
+  TH2D *h1_Tau_genpt_all_t = new TH2D("h1_Tau_genpt_all_t","All hadronic taus delta_vtx_transverse",2000,0,up_lim, 1000, 0, 1000);
+  TH2D *h1_Tau_genpt_reco_t = new TH2D("h1_Tau_genpt_reco_t","Reco hadronic taus delta_vtx_transverse",2000,0,up_lim, 1000, 0, 1000);
 
   TH3D *h3_dm_disp = new TH3D("h3_dm_disp", "Decay Modes vs. taus delta_vt", 6,-0.5,5.5, // dm gen
                                                                              6,-0.5,5.5, // dm reco
-                                                                             300,0,up_lim); // life time
+                                                                             2000,0,up_lim); // life time
   TH2D *h2_pt_disp = new TH2D("h3_pt_disp", "1 - pt_reco/pt_gen vs. taus delta_vt", 100,-2.0,2.0, // 1 - pt_reco/pt_gen
-                                                                                    300,0,up_lim); // life time
+                                                                                    2000,0,up_lim); // life time
 
   TH3D *h3_dm_disp_t = new TH3D("h3_dm_disp_t", "Decay Modes vs. taus delta_vt_t", 6,-0.5,5.5, // dm gen
                                                                                    6,-0.5,5.5, // dm reco
-                                                                                   300,0,up_lim); // life time
+                                                                                   2000,0,up_lim); // life time
   TH2D *h2_pt_disp_t = new TH2D("h3_pt_disp_t", "1 - pt_reco/pt_gen vs. taus delta_vt_t", 100,-2.0,2.0, // 1 - pt_reco/pt_gen
-                                                                                          300,0,up_lim); // life time
+                                                                                          2000,0,up_lim); // life time
 
-  TH2D *pixhits_reco_disp = new TH2D("pixhits_reco_disp", "N hits in PIX (for reco tau tracks) vs. displ.", 200,0,100, 50, 0, 50);
-  TH2D *pixhits_reco_disp_t = new TH2D("pixhits_reco_disp_t", "N hits in PIX (for reco tau tracks) vs. tr displ.", 200,0,100, 50, 0, 50);
+  TH2D *pixhits_reco_disp = new TH2D("pixhits_reco_disp", "N hits in PIX (for reco tau tracks) vs. displ.", 2000,0, up_lim, 50, 0, 50);
+  TH2D *pixhits_reco_disp_t = new TH2D("pixhits_reco_disp_t", "N hits in PIX (for reco tau tracks) vs. tr displ.", 2000,0, up_lim, 50, 0, 50);
 
   for(size_t current_entry = 0; current_entry < n_entries; ++current_entry)
   {
@@ -158,7 +158,9 @@ int main(int argc, char * argv[])
     // }
 
     if(entry.genLepton_kind==5 && entry.genLepton_vis_pt>=15.0) // to take only hadronic Taus
-    {
+    { 
+      if(abs(entry.genLepton_vis_eta) > 0.9 || entry.genLepton_vis_pt < 30.0) continue;
+      if(entry.susy_ctau!=5 || entry.susy_mlsp!=1) continue;
 
       auto genLeptons = reco_tau::gen_truth::GenLepton::fromRootTuple(
                          entry.genLepton_lastMotherIndex,
@@ -185,7 +187,8 @@ int main(int argc, char * argv[])
       {
           if(std::abs(genparticle_.pdgId) == 15 && genparticle_.isLastCopy)
           {
-              disp = genparticle_.vertex.r();
+              disp = genparticle_.getDistance();
+              // disp = genparticle_.vertex.r();
               disp_t = genparticle_.vertex.rho();
           }
       }
@@ -213,6 +216,7 @@ int main(int argc, char * argv[])
       // if(entry.genLepton_index < 0 && entry.genJet_index >= 0) continue;
       if(entry.tau_decayMode >= 0 && entry.tau_decayModeFindingNewDMs == 1 && dR<=0.2) // if recontructed
       {
+        if(entry.tau_pt<30 || abs(entry.tau_eta)>2.1) continue;
 
         Int_t nHits = 0;
         bool reco_track = 0;
