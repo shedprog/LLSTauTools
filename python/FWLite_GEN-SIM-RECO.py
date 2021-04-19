@@ -4,7 +4,7 @@ import numpy as np
 
 if __name__ == '__main__':
 
-    files = ['/afs/cern.ch/user/m/myshched/STauGENProduction/test_prod_HSCP/SUS-RunIIFall18GS-00022.root']
+    files = ['/afs/cern.ch/user/m/myshched/STauGENProduction/test_prod_fullHSCP/EXO-RunIISummer15GS-00340.root']
 
     for f_name in files:
         
@@ -71,25 +71,28 @@ if __name__ == '__main__':
                 This part checks:
                 1.  If there is a track which coresponds to genParticle
                     with transverse vertex position larger than  dis_transv [cm]
-                    (also added condition that momentum points outside the cms)
+                    (also added condition that momentum points outside the cms tracker)
                 2.  If there is a track which coresponds to stau (pdgId == 1000015)
                 '''
-                dis_transv = 100.0 #cm
 
                 if not tr.noVertex():
-                    
-                    print "vertex info: "
-                    print "vertIndex: ", vertex[tr.vertIndex()].position().x(), \
-                                         vertex[tr.vertIndex()].position().y(), \
-                                         vertex[tr.vertIndex()].position().z()
 
-                    print "genPart: ", gen_particle[tr.genpartIndex()-1].vertex().x(), \
-                                       gen_particle[tr.genpartIndex()-1].vertex().y(), \
-                                       gen_particle[tr.genpartIndex()-1].vertex().z()
+                    if(round(vertex[tr.vertIndex()].position().x(),2)!=round(gen_particle[tr.genpartIndex()-1].vertex().x(),2) \
+                       or round(vertex[tr.vertIndex()].position().y(),2)!=round(gen_particle[tr.genpartIndex()-1].vertex().y(),2) \
+                       or round(vertex[tr.vertIndex()].position().z(),2)!=round(gen_particle[tr.genpartIndex()-1].vertex().z(),2)):
+                            if(gen_particle[tr.genpartIndex()-1].pdgId()!=22): # skip gammas
+                                print "vertex does not match: ", "pdgId:", gen_particle[tr.genpartIndex()-1].pdgId()
+                                print "vertIndex: ", vertex[tr.vertIndex()].position().x(), \
+                                                    vertex[tr.vertIndex()].position().y(), \
+                                                    vertex[tr.vertIndex()].position().z()
+
+                                print "genPart: ", gen_particle[tr.genpartIndex()-1].vertex().x(), \
+                                                gen_particle[tr.genpartIndex()-1].vertex().y(), \
+                                                gen_particle[tr.genpartIndex()-1].vertex().z()
+                
+                dis_transv = 500.0 #cm
 
                 if not tr.noGenpart():
-    
-                    # print "genPart index: ", tr.genpartIndex()
 
                     if(gen_particle[tr.genpartIndex()-1].vertex().rho()>=dis_transv \
                        and (gen_particle[tr.genpartIndex()-1].vertex().x()<0) == (gen_particle[tr.genpartIndex()-1].momentum().x()<0) \
