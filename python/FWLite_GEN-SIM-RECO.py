@@ -4,7 +4,9 @@ import numpy as np
 
 if __name__ == '__main__':
 
-    files = ['/afs/cern.ch/user/m/myshched/STauGENProduction/test_prod_fullHSCP/EXO-RunIISummer15GS-00340.root']
+    files = ['/afs/cern.ch/user/m/myshched/STauGENProduction/test_prod_my/SUS-RunIIFall18GS-00022.root']
+    # files = ['/afs/cern.ch/user/m/myshched/STauGENProduction/test_prod_T1qqqq/SUS-RunIISummer15GS-00239.root']
+    # files = ['root://cmsxrootd.fnal.gov//store/mc/RunIIFall17GS/ADDGravToGG_NegInt-0_LambdaT-10000_M-1000To2000_TuneCP2_13TeV-pythia8/GEN-SIM/93X_mc2017_realistic_v3-v1/90000/042BDB3E-0E0E-E911-91E3-EC0D9A0B3080.root']
 
     for f_name in files:
         
@@ -47,7 +49,7 @@ if __name__ == '__main__':
             ev.getByLabel(labelVertex, handleVertex)
             vertex = handleVertex.product()
 
-            Tracker_nHits = np.zeros((4,1600000), dtype=int)
+            Tracker_nHits = np.zeros((4,10000000), dtype=int)
             for i, label in enumerate(labelsHits):
                 '''
                 In this part, hits inside PIXEL tracker
@@ -75,7 +77,7 @@ if __name__ == '__main__':
                 2.  If there is a track which coresponds to stau (pdgId == 1000015)
                 '''
 
-                if not tr.noVertex():
+                if (not tr.noVertex()) and (not tr.noGenpart()):
 
                     if(round(vertex[tr.vertIndex()].position().x(),2)!=round(gen_particle[tr.genpartIndex()-1].vertex().x(),2) \
                        or round(vertex[tr.vertIndex()].position().y(),2)!=round(gen_particle[tr.genpartIndex()-1].vertex().y(),2) \
@@ -85,7 +87,6 @@ if __name__ == '__main__':
                                 print "vertIndex: ", vertex[tr.vertIndex()].position().x(), \
                                                     vertex[tr.vertIndex()].position().y(), \
                                                     vertex[tr.vertIndex()].position().z()
-
                                 print "genPart: ", gen_particle[tr.genpartIndex()-1].vertex().x(), \
                                                 gen_particle[tr.genpartIndex()-1].vertex().y(), \
                                                 gen_particle[tr.genpartIndex()-1].vertex().z()
