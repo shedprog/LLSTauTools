@@ -75,6 +75,7 @@ if __name__ == '__main__':
                     with transverse vertex position larger than  dis_transv [cm]
                     (also added condition that momentum points outside the cms tracker)
                 2.  If there is a track which coresponds to stau (pdgId == 1000015)
+                3.  Check if GenParticle vetrex and SimVertex coincide for the same track
                 '''
 
                 if (not tr.noVertex()) and (not tr.noGenpart()):
