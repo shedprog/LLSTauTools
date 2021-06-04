@@ -157,10 +157,10 @@ int main(int argc, char * argv[])
     //   << std::endl;
     // }
 
-    if(entry.genLepton_kind==5 && entry.genLepton_vis_pt>=15.0) // to take only hadronic Taus
+    if(entry.genLepton_kind==5 && entry.genLepton_vis_pt>=10.0) // to take only hadronic Taus
     { 
-      if(abs(entry.genLepton_vis_eta) > 0.9 || entry.genLepton_vis_pt < 30.0) continue;
-      if(entry.susy_ctau!=5 || entry.susy_mlsp!=1) continue;
+      // if(abs(entry.genLepton_vis_eta) > 0.6 || entry.genLepton_vis_pt < 30.0) continue;
+      // if(entry.susy_ctau!=10 || entry.susy_mlsp!=1) continue;
 
       auto genLeptons = reco_tau::gen_truth::GenLepton::fromRootTuple(
                          entry.genLepton_lastMotherIndex,
@@ -187,9 +187,13 @@ int main(int argc, char * argv[])
       {
           if(std::abs(genparticle_.pdgId) == 15 && genparticle_.isLastCopy)
           {
-              disp = genparticle_.getDistance();
-              // disp = genparticle_.vertex.r();
+              //disp = genparticle_.getDistance();
+              disp = genparticle_.vertex.r();
               disp_t = genparticle_.vertex.rho();
+              // std::cout << genparticle_.vertex.x() << " " << genparticle_.vertex.y() << " " << genparticle_.vertex.z()  << disp << " " << disp_t << std::endl;
+              // auto mother = *genparticle_.mothers.begin();
+              // std::cout << mother->vertex.x() << " " << mother->vertex.y() << " " << mother->vertex.z()  << std::endl;
+              // std::cout << entry.pv_x << " " << entry.pv_y << " " << entry.pv_z  << std::endl;
           }
       }
       assert(disp != -9);
@@ -216,7 +220,7 @@ int main(int argc, char * argv[])
       // if(entry.genLepton_index < 0 && entry.genJet_index >= 0) continue;
       if(entry.tau_decayMode >= 0 && entry.tau_decayModeFindingNewDMs == 1 && dR<=0.2) // if recontructed
       {
-        if(entry.tau_pt<30 || abs(entry.tau_eta)>2.1) continue;
+        // if(entry.tau_pt<30 || abs(entry.tau_eta)>2.1) continue;
 
         Int_t nHits = 0;
         bool reco_track = 0;

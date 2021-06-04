@@ -12,10 +12,10 @@ if __name__ == "__main__":
 
     ROOT.gStyle.SetOptStat(0)
 
-    h2_pt_disp_ = file.Get("h3_pt_disp")
-    h2_pt_disp2_ = file2.Get("h3_pt_disp")
+    h2_pt_disp_ = file.Get("h3_pt_disp_t")
+    h2_pt_disp2_ = file2.Get("h3_pt_disp_t")
 
-    # for disp < 10 cm
+    # for disp < n cm
     canvas.cd(1)
     legend = ROOT.TLegend(0.6,0.75,1.0,1.0)
     # legend.SetTextSize(5)
@@ -43,16 +43,16 @@ if __name__ == "__main__":
     h2_pt_disp2_1.Draw("HIST SAME")
     legend.Draw("same")
 
-    # for disp > 10 cm
+    # for disp > n cm
     canvas.cd(2)
     legend2 = ROOT.TLegend(0.6,0.75,1.0,1.0)
     # legend2.SetTextSize(5)
     h2_pt_disp_2 = h2_pt_disp_.ProjectionX("h2_1",
                                h2_pt_disp_.GetYaxis().FindFixBin(5.0),
-                               h2_pt_disp_.GetYaxis().FindFixBin(200.0))
+                               h2_pt_disp_.GetYaxis().FindFixBin(100.0))
     h2_pt_disp2_2 = h2_pt_disp2_.ProjectionX("h2_2",
                                h2_pt_disp_.GetYaxis().FindFixBin(5.0),
-                               h2_pt_disp_.GetYaxis().FindFixBin(200.0))
+                               h2_pt_disp_.GetYaxis().FindFixBin(100.0))
 
     print(h2_pt_disp_2.Integral(), h2_pt_disp2_2.Integral())
     h2_pt_disp2_2.Scale(h2_pt_disp_2.GetEntries()/h2_pt_disp2_2.GetEntries())
