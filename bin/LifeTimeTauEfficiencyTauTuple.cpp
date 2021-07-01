@@ -101,7 +101,7 @@ int main(int argc, char * argv[])
   std::cout << "Number of entries: " << tauTuple->GetEntries() << std::endl;
   size_t n_entries = tauTuple->GetEntries();
 
-  double up_lim = 200; // units?
+  double up_lim = 100; // units?
 
   // Count identification histogram
   TH2D *h1_Tau_h_all = new TH2D("h1_Tau_h_all","All hadronic taus delta_vtx",2000,0,up_lim, 1000, 0, 1000);
@@ -114,20 +114,20 @@ int main(int argc, char * argv[])
   TH2D *h1_Tau_genpt_all_t = new TH2D("h1_Tau_genpt_all_t","All hadronic taus delta_vtx_transverse",2000,0,up_lim, 1000, 0, 1000);
   TH2D *h1_Tau_genpt_reco_t = new TH2D("h1_Tau_genpt_reco_t","Reco hadronic taus delta_vtx_transverse",2000,0,up_lim, 1000, 0, 1000);
 
-  TH3D *h3_dm_disp = new TH3D("h3_dm_disp", "Decay Modes vs. taus delta_vt", 6,-0.5,5.5, // dm gen
-                                                                             6,-0.5,5.5, // dm reco
-                                                                             2000,0,up_lim); // life time
-  TH2D *h2_pt_disp = new TH2D("h3_pt_disp", "1 - pt_reco/pt_gen vs. taus delta_vt", 100,-2.0,2.0, // 1 - pt_reco/pt_gen
-                                                                                    2000,0,up_lim); // life time
+  TH3D *h3_dm_disp = new TH3D("h3_dm_disp", "Decay Modes vs. taus delta_vt", 6,-0.5,5.5, 6,-0.5,5.5, 2000,0,up_lim); // (dm gen, dm reco, life time)
+  TH2D *h2_pt_disp = new TH2D("h3_pt_disp", "1 - pt_reco/pt_gen vs. taus delta_vt", 100,-2.0,2.0, 2000,0,up_lim); // ( 1 - pt_reco/pt_gen, life time)
 
-  TH3D *h3_dm_disp_t = new TH3D("h3_dm_disp_t", "Decay Modes vs. taus delta_vt_t", 6,-0.5,5.5, // dm gen
-                                                                                   6,-0.5,5.5, // dm reco
-                                                                                   2000,0,up_lim); // life time
-  TH2D *h2_pt_disp_t = new TH2D("h3_pt_disp_t", "1 - pt_reco/pt_gen vs. taus delta_vt_t", 100,-2.0,2.0, // 1 - pt_reco/pt_gen
-                                                                                          2000,0,up_lim); // life time
+  TH3D *h3_dm_disp_t = new TH3D("h3_dm_disp_t", "Decay Modes vs. taus delta_vt_t", 6,-0.5,5.5, 6,-0.5,5.5, 2000,0, up_lim); //(dm gen, dm reco, life time)
+  TH2D *h2_pt_disp_t = new TH2D("h3_pt_disp_t", "1 - pt_reco/pt_gen vs. taus delta_vt_t", 100,-2.0,2.0, 2000,0,up_lim); // ( 1 - pt_reco/pt_gen, life time)
 
   TH2D *pixhits_reco_disp = new TH2D("pixhits_reco_disp", "N hits in PIX (for reco tau tracks) vs. displ.", 2000,0, up_lim, 50, 0, 50);
   TH2D *pixhits_reco_disp_t = new TH2D("pixhits_reco_disp_t", "N hits in PIX (for reco tau tracks) vs. tr displ.", 2000,0, up_lim, 50, 0, 50);
+
+  // dR vs. displacement
+  // TH2D *h2_dR_Tauvis_sTau = new TH2D("h2_dR_Tauvis_sTau", "dR of visible Tau component and sTau", 1000, 0.0, up_lim,100, 0.0, 0.5); // (displacment, dR)
+  // TH2D *h2_dR_Taureco_Tauvis = new TH2D("h2_dR_Taureco_Tauvis", "dR of reco Tau and visible Tau component", 1000, 0.0, up_lim, 100, 0.0, 0.5);
+  TH2D *h2_dR_Taureco_sTau = new TH2D("h2_dR_Taureco_sTau", "dR of reco Tau and sTau", 1000, 0.0, up_lim, 100, 0.0, 0.5);
+  TH2D *h2_dR_Taureco_sTau_h = new TH2D("h2_dR_Taureco_sTau_h", "dR of reco Tau and sTau high pt", 1000, 0.0, up_lim, 100, 0.0, 0.5);
 
   for(size_t current_entry = 0; current_entry < n_entries; ++current_entry)
   {
@@ -182,6 +182,7 @@ int main(int argc, char * argv[])
 
       double disp{-9}, disp_t{-9};
       double gentau_pt = genLeptons.visibleP4().Pt();
+      ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<double>> stau_p4;
 
       for(auto genparticle_: all_gen_particles)
       {
@@ -195,9 +196,16 @@ int main(int argc, char * argv[])
               // std::cout << mother->vertex.x() << " " << mother->vertex.y() << " " << mother->vertex.z()  << std::endl;
               // std::cout << entry.pv_x << " " << entry.pv_y << " " << entry.pv_z  << std::endl;
           }
+
+          if(std::abs(genparticle_.pdgId) == 1000015 && genparticle_.isLastCopy)
+          {
+             stau_p4 = genparticle_.p4;
+          }
+
       }
       assert(disp != -9);
       assert(disp_t != -9);
+      assert(stau_p4.X() != 0.0);
 
       // if(disp >= 40 && entry.tau_decayMode==0 && genTauDecayMode==1){
       //   std::cout << std::endl;
@@ -218,8 +226,16 @@ int main(int argc, char * argv[])
 
 
       // if(entry.genLepton_index < 0 && entry.genJet_index >= 0) continue;
-      if(entry.tau_decayMode >= 0 && entry.tau_decayModeFindingNewDMs == 1 && dR<=0.2) // if recontructed
+      // if(entry.tau_decayMode >= 0 && entry.tau_decayModeFindingNewDMs == 1 && dR<=0.2) // if recontructed
+      if(entry.tau_decayMode >= 0 && entry.tau_decayModeFindingNewDMs == 1) // if recontructed
       {
+        // dR
+        // h2_dR_Tauvis_sTau->Fill(disp_t, ROOT::Math::VectorUtil::DeltaR(gen_p4, stau_p4));
+        // h2_dR_Taureco_Tauvis->Fill(disp_t, dR);
+        if(entry.genLepton_vis_pt < 80.0)
+          h2_dR_Taureco_sTau->Fill(disp_t, ROOT::Math::VectorUtil::DeltaR(tau_p4, stau_p4));
+        else
+          h2_dR_Taureco_sTau_h->Fill(disp_t, ROOT::Math::VectorUtil::DeltaR(tau_p4, stau_p4));
         // if(entry.tau_pt<30 || abs(entry.tau_eta)>2.1) continue;
 
         Int_t nHits = 0;
@@ -265,6 +281,12 @@ int main(int argc, char * argv[])
   h2_pt_disp_t->Write();
   pixhits_reco_disp->Write();
   pixhits_reco_disp_t->Write();
+  
+  // h2_dR_Tauvis_sTau->Write();
+  // h2_dR_Taureco_Tauvis->Write();
+  h2_dR_Taureco_sTau->Write();
+  h2_dR_Taureco_sTau_h->Write();
+
   outputFile->Close();
 
   std::cout << "The StauEfficiency for TauTuple is executed!" << std::endl;
