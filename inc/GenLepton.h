@@ -177,6 +177,67 @@ public:
         return lepton;
     }
 
+    static GenLepton fromRootTuple(int lastMotherIndex,
+                                   const ROOT::VecOps::RVec<int>& genParticle_pdgId,
+                                   const ROOT::VecOps::RVec<Long64_t>& genParticle_mother,
+                                   const ROOT::VecOps::RVec<int>& genParticle_charge,
+                                   const ROOT::VecOps::RVec<int>& genParticle_isFirstCopy,
+                                   const ROOT::VecOps::RVec<int>& genParticle_isLastCopy,
+                                   const ROOT::VecOps::RVec<float>& genParticle_pt,
+                                   const ROOT::VecOps::RVec<float>& genParticle_eta,
+                                   const ROOT::VecOps::RVec<float>& genParticle_phi,
+                                   const ROOT::VecOps::RVec<float>& genParticle_mass,
+                                   const ROOT::VecOps::RVec<float>& genParticle_vtx_x,
+                                   const ROOT::VecOps::RVec<float>& genParticle_vtx_y,
+                                   const ROOT::VecOps::RVec<float>& genParticle_vtx_z)
+    {
+        const size_t N = genParticle_pdgId.size();
+        assert(N <= MaxNumberOfParticles);
+        assert(genParticle_mother.size() == N);
+        assert(genParticle_charge.size() == N);
+        assert(genParticle_isFirstCopy.size() == N);
+        assert(genParticle_isLastCopy.size() == N);
+        assert(genParticle_pt.size() == N);
+        assert(genParticle_eta.size() == N);
+        assert(genParticle_phi.size() == N);
+        assert(genParticle_mass.size() == N);
+        assert(genParticle_vtx_x.size() == N);
+        assert(genParticle_vtx_y.size() == N);
+        assert(genParticle_vtx_z.size() == N);
+        assert(lastMotherIndex >= -1);
+
+        GenLepton lepton;
+        lepton.particles_->resize(N);
+        // lepton.lastCopy_ = &lepton.particles_->at(lastMotherIndex + 1);
+        lepton.firstCopy_ = &lepton.particles_->at(lastMotherIndex + 1);
+        for(size_t n = 0; n < N; ++n) {
+            GenParticle& p = lepton.particles_->at(n);
+            p.pdgId = genParticle_pdgId.at(n);
+            p.charge = genParticle_charge.at(n);
+            p.isFirstCopy = genParticle_isFirstCopy.at(n);
+            p.isLastCopy = genParticle_isLastCopy.at(n);
+            p.p4 = LorentzVectorM(genParticle_pt.at(n), genParticle_eta.at(n),
+                                  genParticle_phi.at(n), genParticle_mass.at(n));
+            p.vertex = Point3D(genParticle_vtx_x.at(n), genParticle_vtx_y.at(n), genParticle_vtx_z.at(n));
+            std::set<size_t> mothers;
+            Long64_t mother_encoded = genParticle_mother.at(n);
+            if(mother_encoded >= 0) {
+                do {
+                    Long64_t mother_index = mother_encoded % static_cast<Long64_t>(MaxNumberOfParticles);
+                    mother_encoded = (mother_encoded - mother_index) / static_cast<int>(MaxNumberOfParticles);
+                    mothers.insert(static_cast<size_t>(mother_index));
+                } while(mother_encoded > 0);
+            }
+            for(size_t mother_index : mothers) {
+                assert(mother_index < N);
+                p.mothers.insert(&lepton.particles_->at(mother_index));
+                lepton.particles_->at(mother_index).daughters.insert(&p);
+            }
+        }
+        lepton.initialize();
+        return lepton;
+    }
+
     static const GenParticle* findTerminalCopy(const GenParticle& genParticle, bool first)
     {
         const GenParticle* particle = &genParticle;
