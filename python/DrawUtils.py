@@ -8,7 +8,8 @@ def GetCanvas(name : str) -> ROOT.TCanvas:
 
 def PlotHistList(canvas : ROOT.TCanvas,
                  hist_list : List[ROOT.TH1],
-                 title : str) -> None:
+                 x_axis_title: str,
+                 y_axis_title: str) -> None:
     '''
     Ploting List of histograms
     on the single pad
@@ -17,6 +18,8 @@ def PlotHistList(canvas : ROOT.TCanvas,
     max_y = 0
     for i, h in enumerate(hist_list):
         max_y = max(max_y, h.GetMaximum())
+        h.GetXaxis().SetTitle(x_axis_title)
+        h.GetYaxis().SetTitle(y_axis_title)
         h.SetLineColor(ColorIterator(i))
         h.SetLineWidth(3)
         h.Draw("same") if i!=0 else h.Draw()
@@ -68,7 +71,7 @@ def DrawHeader(pad : ROOT.TPad,
     channelLine = ROOT.TLatex()
     channelLine.SetTextFont(42)
     channelLine.SetTextSize(textSize)
-    channelLine.DrawLatexNDC(0.17, 0.92, titleText)
+    channelLine.DrawLatexNDC(0.11, 0.92, titleText)
 
     cmsLine = ROOT.TLatex()
     cmsLine.SetTextFont(62)

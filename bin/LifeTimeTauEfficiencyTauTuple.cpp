@@ -22,6 +22,7 @@
 #include "TMath.h"
 #include "Math/VectorUtil.h"
 #include "TRandom.h"
+#include "TMath.h"
 
 #include "FileTools.h"
 #include "TauTuple.h"
@@ -165,7 +166,7 @@ int main(int argc, char * argv[])
       // if(abs(entry.genLepton_vis_eta) > 2.1) continue;
       // if(entry.susy_ctau!=10 || entry.susy_mlsp!=1) continue;
 
-      auto genLeptons = reco_tau::gen_truth::GenLepton::fromRootTuple(
+      auto genLeptons = reco_tau::gen_truth::GenLepton::fromRootTuple<std::vector>(
                          entry.genLepton_lastMotherIndex,
                          entry.genParticle_pdgId,
                          entry.genParticle_mother,
@@ -191,14 +192,9 @@ int main(int argc, char * argv[])
       {
           if(std::abs(genparticle_.pdgId) == 15 && genparticle_.isLastCopy)
           {
-              //disp = genparticle_.getDistance();
               disp = genparticle_.vertex.r();
               disp_t = genparticle_.vertex.rho();
               disp_z = genparticle_.vertex.z();
-              // std::cout << genparticle_.vertex.x() << " " << genparticle_.vertex.y() << " " << genparticle_.vertex.z()  << disp << " " << disp_t << std::endl;
-              // auto mother = *genparticle_.mothers.begin();
-              // std::cout << mother->vertex.x() << " " << mother->vertex.y() << " " << mother->vertex.z()  << std::endl;
-              // std::cout << entry.pv_x << " " << entry.pv_y << " " << entry.pv_z  << std::endl;
           }
 
           if(std::abs(genparticle_.pdgId) == 1000015 && genparticle_.isLastCopy)
@@ -215,9 +211,11 @@ int main(int argc, char * argv[])
 
       // Print output
       if(DEBUG_MODE) {
-        if(disp_t >= 50 && disp_t <= 100 && entry.tau_decayMode>0 && genTauDecayMode==1) {
+        //if(disp_t >= 50 && disp_t <= 80) {
+            std::cout << "--------------------------------------\n";
+            std::cin.ignore();
             size_t n_gen_particles = entry.genParticle_pdgId.size();
-            for(size_t gen_idx = 0; gen_idx < n_gen_particles; ++gen_idx) {      
+            for(size_t gen_idx = 0; gen_idx < n_gen_particles; ++gen_idx) {
               std::cout  << "idx: " << gen_idx << " "
               << "pdgId: " << entry.genParticle_pdgId[gen_idx] << " "
               << "pt: " << entry.genParticle_pt[gen_idx] << " "
@@ -228,7 +226,7 @@ int main(int argc, char * argv[])
               << " " << entry.genParticle_vtx_y[gen_idx]
               << " " << entry.genParticle_vtx_z[gen_idx]
               << std::endl;
-            }
+       //     }
             std::cout << std::endl;
             std::cout << "event number :" << entry.evt << " Lumi: " << entry.lumi << std::endl;
             genLeptons.PrintDecay(std::cout);
@@ -317,6 +315,8 @@ int main(int argc, char * argv[])
 
 void info(const Tau& entry) {
 
+  double GenPartMatch = 0.1;
+
   std::cout << "\nReco Tau:\n"
             << "pt: " << entry.tau_pt << " eta: " << entry.tau_eta << " phi: " << entry.tau_phi
             << " DM:" << entry.tau_decayMode
@@ -327,34 +327,61 @@ void info(const Tau& entry) {
   std::cout << "Lost Track:\n";
 
   for(int track_i=0; track_i < entry.lostTrack_track_pt.size(); track_i++ ) {
-  if(entry.lostTrack_tauSignal[track_i]!=1) continue;
+  // if(entry.lostTrack_tauSignal[track_i]!=1) continue;
   std::cout
             << "pt: " << entry.lostTrack_pt[track_i] << " eta: " << entry.lostTrack_eta[track_i] << " phi: " << entry.lostTrack_phi[track_i]
             << " charge: " << entry.lostTrack_charge[track_i]
             << " vtx: " << entry.lostTrack_vertex_x[track_i] << " " << entry.lostTrack_vertex_y[track_i] << " " << entry.lostTrack_vertex_z[track_i] << " " << entry.lostTrack_vertex_t[track_i] << " "
             << " nHits: " << entry.lostTrack_nHits[track_i]
-            << " particleType: " << entry.pfCand_particleType[track_i]
+            << " particleType: " << entry.lostTrack_particleType[track_i]
             // << " nPixelLayers: " << entry.lostTrack_nPixelLayers[track_i]
             // << " nStripLayers: " << entry.lostTrack_nStripLayers[track_i]
             << " Tau Signal: " << entry.lostTrack_tauSignal[track_i]
             << " ECAL/HCAL energy: " << entry.lostTrack_caloFraction[track_i]  << " " << entry.lostTrack_hcalFraction[track_i]
             << std::endl;
+    // match to gen particle:
+  TLorentzVector lostTrack_p4, genPart_p4;
+  lostTrack_p4.SetPtEtaPhiM(entry.lostTrack_pt[track_i],
+                         entry.lostTrack_eta[track_i],
+                         entry.lostTrack_phi[track_i],
+                         entry.lostTrack_mass[track_i]);
+
+  size_t n_gen_particles = entry.genParticle_pdgId.size();
+  for(size_t gen_idx = 0; gen_idx < n_gen_particles; ++gen_idx)
+  {
+    genPart_p4.SetPtEtaPhiM(entry.genParticle_pt[gen_idx],
+                            entry.genParticle_eta[gen_idx],
+                            entry.genParticle_phi[gen_idx],
+                            entry.genParticle_mass[gen_idx]);
+
+    if(ROOT::Math::VectorUtil::DeltaR(lostTrack_p4, genPart_p4)<GenPartMatch)
+      std::cout << "gen --> "  << "idx: " << gen_idx << " "
+      << "pdgId: " << entry.genParticle_pdgId[gen_idx] << " "
+      << "pt: " << entry.genParticle_pt[gen_idx] << " "
+      << "eta: " << entry.genParticle_eta[gen_idx] << " "
+      << "phi: " << entry.genParticle_phi[gen_idx] << " "
+      << " vtx "
+      << " " << entry.genParticle_vtx_x[gen_idx]
+      << " " << entry.genParticle_vtx_y[gen_idx]
+      << " " << entry.genParticle_vtx_z[gen_idx]
+      << std::endl;
+  }
   }
 
   std::cout << "\nPfCand:\n";
 
   for(int track_i=0; track_i < entry.pfCand_track_pt.size(); track_i++ ) {
-  if(entry.pfCand_tauSignal[track_i]!=1) continue;
+  // if(entry.pfCand_tauSignal[track_i]!=1) continue;
   // if(entry.pfCand_particleType[track_i]!=4) continue;
   std::cout
             << "pt: " << entry.pfCand_pt[track_i] << " eta: " << entry.pfCand_eta[track_i] << " phi: " << entry.pfCand_phi[track_i]
             << " charge: " << entry.pfCand_charge[track_i]
             << " vtx: " << entry.pfCand_vertex_x[track_i] << " " << entry.pfCand_vertex_y[track_i] << " " << entry.pfCand_vertex_z[track_i] << " " << entry.pfCand_vertex_t[track_i] << " "
-            << " particleType: " << entry.pfCand_particleType[track_i]
             << " nHits: " << entry.pfCand_nHits[track_i]
-            << " nPixelHits: " << entry.pfCand_nPixelHits[track_i]
-            << " nPixelLayers: " << entry.pfCand_nPixelLayers[track_i]
-            << " nStripLayers: " << entry.pfCand_nStripLayers[track_i]
+            << " particleType: " << entry.pfCand_particleType[track_i]
+            // << " nPixelHits: " << entry.pfCand_nPixelHits[track_i]
+            // << " nPixelLayers: " << entry.pfCand_nPixelLayers[track_i]
+            // << " nStripLayers: " << entry.pfCand_nStripLayers[track_i]
             << " Tau Signal: " << entry.pfCand_tauSignal[track_i]
             << " ECAL/HCAL energy: " << entry.pfCand_caloFraction[track_i]  << " " << entry.pfCand_hcalFraction[track_i]
             << std::endl;
@@ -374,7 +401,7 @@ void info(const Tau& entry) {
                             entry.genParticle_phi[gen_idx],
                             entry.genParticle_mass[gen_idx]);
 
-    if(ROOT::Math::VectorUtil::DeltaR(pfCand_p4, genPart_p4)<0.1)
+    if(ROOT::Math::VectorUtil::DeltaR(pfCand_p4, genPart_p4)<GenPartMatch)
       std::cout << "gen --> "  << "idx: " << gen_idx << " "
       << "pdgId: " << entry.genParticle_pdgId[gen_idx] << " "
       << "pt: " << entry.genParticle_pt[gen_idx] << " "
@@ -399,6 +426,31 @@ void info(const Tau& entry) {
             << " n_ValidPixelHits: " << entry.isoTrack_n_ValidPixelHits[track_i]
             << " n_ValidStripHits: " << entry.isoTrack_n_ValidStripHits[track_i]
             << std::endl;
+
+  size_t n_gen_particles = entry.genParticle_pdgId.size();
+  for(size_t gen_idx = 0; gen_idx < n_gen_particles; ++gen_idx)
+  {
+    // genPart_p4.SetPtEtaPhiM(entry.genParticle_pt[gen_idx],
+    //                         entry.genParticle_eta[gen_idx],
+    //                         entry.genParticle_phi[gen_idx],
+    //                         entry.genParticle_mass[gen_idx]);
+
+    // if(ROOT::Math::VectorUtil::DeltaR(pfCand_p4, genPart_p4)<GenPartMatch)
+    if(TMath::Sqrt(TMath::Power(entry.genParticle_eta[gen_idx]-entry.isoTrack_eta[track_i],2)+
+                   TMath::Power(entry.genParticle_phi[gen_idx]-entry.isoTrack_phi[track_i],2))<GenPartMatch)
+
+      std::cout << "gen --> "  << "idx: " << gen_idx << " "
+      << "pdgId: " << entry.genParticle_pdgId[gen_idx] << " "
+      << "pt: " << entry.genParticle_pt[gen_idx] << " "
+      << "eta: " << entry.genParticle_eta[gen_idx] << " "
+      << "phi: " << entry.genParticle_phi[gen_idx] << " "
+      << " vtx "
+      << " " << entry.genParticle_vtx_x[gen_idx]
+      << " " << entry.genParticle_vtx_y[gen_idx]
+      << " " << entry.genParticle_vtx_z[gen_idx]
+      << std::endl;
+  }
+
   }
 
 
