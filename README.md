@@ -11,7 +11,7 @@ make
 
 Tau reconstruction efficency for different disp. (to be run above TauML TauTuples):
 ```
-./LifeTimeTauEfficiencyTauTuple 1 /pnfs/desy.de/cms/tier2/store/user/myshched/Signal2018ctau/SUS-RunIIFall18GS_ctau0p01-1000mm_mstau100_mlsp1-RAWSIM/crab_stau_mstau100_mlsp1/210308_080104/0000/
+./TauTuple_LifeTimeTauEfficiency -1 /pnfs/desy.de/cms/tier2/store/user/myshched/Signal2018ctau/SUS-RunIIFall18GS_ctau0p01-1000mm_mstau100_mlsp1-RAWSIM/crab_stau_mstau100_mlsp1/210308_080104/0000/
 
 ```
 ## Useful Tools

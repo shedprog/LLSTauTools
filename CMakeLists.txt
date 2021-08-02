@@ -18,5 +18,5 @@ file(GLOB SOURCES "src/*.cc" "src/*.cpp")
 #add_executable(LifeTimeTauEfficiency bin/LifeTimeTauEfficiency.cpp ${SOURCES})
 #target_link_libraries(LifeTimeTauEfficiency ${ROOT_LIBRARIES} ${Boost_LIBRARIES})
 
-add_executable(LifeTimeTauEfficiencyTauTuple bin/LifeTimeTauEfficiencyTauTuple.cpp ${SOURCES})
-target_link_libraries(LifeTimeTauEfficiencyTauTuple ${ROOT_LIBRARIES} ${Boost_LIBRARIES})
+add_executable(TauTuple_LifeTimeTauEfficiency bin/TauTuple_LifeTimeTauEfficiency.cpp ${SOURCES})
+target_link_libraries(TauTuple_LifeTimeTauEfficiency ${ROOT_LIBRARIES} ${Boost_LIBRARIES})
