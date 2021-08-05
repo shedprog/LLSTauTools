@@ -43,8 +43,7 @@ if __name__ == "__main__":
                                  .Define('Angle_taustau','ROOT::Math::VectorUtil::Angle\
                                      (std::get<0>(gentau_info),std::get<2>(gentau_info))')
 
-    hists['vis_pt'] = hadronic_taus.Histo1D(("vis_pt", f"some hist",
-                                                60, 0.0, 800), "vis_pt")
+    hists['vis_pt'] = hadronic_taus.Histo1D(("vis_pt", f"some hist", 60, 0.0, 800), "vis_pt")
         
     print('All stats:')
     allCutsReport = df.Report()

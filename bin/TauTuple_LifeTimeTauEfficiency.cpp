@@ -171,6 +171,7 @@ int main(int argc, char * argv[])
         //if(disp_t >= 50 && disp_t <= 80) {
             std::cout << "--------------------------------------\n";
             std::cin.ignore();
+
             size_t n_gen_particles = entry.genParticle_pdgId.size();
             for(size_t gen_idx = 0; gen_idx < n_gen_particles; ++gen_idx) {
               std::cout  << "idx: " << gen_idx << " "
@@ -183,12 +184,15 @@ int main(int argc, char * argv[])
               << " " << entry.genParticle_vtx_y[gen_idx]
               << " " << entry.genParticle_vtx_z[gen_idx]
               << std::endl;
-       //     }
-            std::cout << std::endl;
-            std::cout << "event number :" << entry.evt << " Lumi: " << entry.lumi << std::endl;
-            genLeptons.PrintDecay(std::cout);
-            info(entry);
-        }
+           }
+
+          std::cout << std::endl;
+          std::cout << "event number :" << entry.evt << " Lumi: " << entry.lumi << std::endl;
+          genLeptons.PrintDecay(std::cout);
+          auto gen_p4 = genLeptons.visibleP4();
+          std::cout << std::endl << "Match of gen_vis to stau: " << ROOT::Math::VectorUtil::DeltaR(gen_p4, stau_p4) << std::endl;
+          info(entry);
+
       }
 
       h1_Tau_h_all->Fill(disp,entry.susy_ctau);
@@ -272,7 +276,7 @@ int main(int argc, char * argv[])
 
 void info(const Tau& entry) {
 
-  double GenPartMatch = 0.1;
+  double GenPartMatch = 0.2;
 
   std::cout << "\nReco Tau:\n"
             << "pt: " << entry.tau_pt << " eta: " << entry.tau_eta << " phi: " << entry.tau_phi
@@ -328,6 +332,7 @@ void info(const Tau& entry) {
   std::cout << "\nPfCand:\n";
 
   for(int track_i=0; track_i < entry.pfCand_track_pt.size(); track_i++ ) {
+  if(entry.pfCand_pt[track_i]<1.0) continue;
   // if(entry.pfCand_tauSignal[track_i]!=1) continue;
   // if(entry.pfCand_particleType[track_i]!=4) continue;
   std::cout
