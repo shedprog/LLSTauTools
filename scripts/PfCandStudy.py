@@ -41,7 +41,7 @@ if __name__ == "__main__":
                                  .Define('dR_stau_tau','ROOT::Math::VectorUtil::DeltaR\
                                      (std::get<0>(gentau_info),std::get<2>(gentau_info))')\
                                  .Define('Angle_taustau','ROOT::Math::VectorUtil::Angle\
-                                     (std::get<0>(gentau_info),std::get<2>(gentau_info))')
+                                     (std::get<0>(gentau_info),std::get<2>(gentau_info))')\
 
     hists['vis_pt'] = hadronic_taus.Histo1D(("vis_pt", f"some hist", 60, 0.0, 800), "vis_pt")
         

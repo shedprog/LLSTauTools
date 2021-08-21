@@ -30,3 +30,7 @@ class DataFrameFunc:
         return std::make_tuple(visP4, vtx, stauP4);
         '''
         return get_kinem
+
+    # def gen_jet_match():
+    #     '''
+    #     const reco_tau::gen_truth::LorentzVectorM& jetP4 = 

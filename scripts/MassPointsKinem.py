@@ -43,7 +43,8 @@ if __name__ == "__main__":
              "stau_E"  : [],
              "stau_mass"   : [],
              "dRtaustau"   : [],
-             "Angle_taustau" : []
+             "Angle_taustau" : [],
+             "dRjetstau"     : []
             }
     for mstau, mlsp, ctau0 in grid:
 
@@ -63,7 +64,12 @@ if __name__ == "__main__":
                                  .Define('dR_stau_tau','ROOT::Math::VectorUtil::DeltaR\
                                      (std::get<0>(gentau_info),std::get<2>(gentau_info))')\
                                  .Define('Angle_taustau','ROOT::Math::VectorUtil::Angle\
-                                     (std::get<0>(gentau_info),std::get<2>(gentau_info))')
+                                     (std::get<0>(gentau_info),std::get<2>(gentau_info))')\
+                                 .Define('jetp4','reco_tau::gen_truth::LorentzVectorM(jet_pt, jet_eta, jet_phi, jet_mass)')\
+                                 .Define('dR_stau_jet','ROOT::Math::VectorUtil::DeltaR\
+                                     (std::get<2>(gentau_info),jetp4)')
+
+        # filters[-1] =  filters[-1].Filter('jetp4.Pt()>1.0 && jetp4.Pt()<1000', 'have jet')
 
         hists['vis_pt'].append(filters[-1].Histo1D(("vis_pt",
                                                     f"vis_pt, MS({mstau}_{mlsp}_{ctau0})",
@@ -89,6 +95,9 @@ if __name__ == "__main__":
         hists['Angle_taustau'].append(filters[-1].Histo1D(("Angle_taustau",
                                                     f"gen Angle(tau,stau), MS({mstau}_{mlsp}_{ctau0})",
                                                     100, 0, 3.0), "Angle_taustau"))
+        hists['dRjetstau'].append(filters[-1].Histo1D(("dRjetstau",
+                                                    f"gen dR(seedjet,stau), MS({mstau}_{mlsp}_{ctau0})",
+                                                    100, 0, 5.0), "dR_stau_jet"))
         
     print('All stats:')
     allCutsReport = df.Report()
@@ -133,5 +142,10 @@ if __name__ == "__main__":
     DrawUtils.PlotHistList(canvas_eta, hists['Angle_taustau'],"[rad]","entries")
     DrawUtils.DrawHeader(canvas_eta, "Angle(tau,stau)" , "#tau reco", "c#tau_{0}=1000mm")
     DrawUtils.DrawLegend(canvas_eta, DrawUtils.GetHistTitlesLegend(hists["Angle_taustau"]))
+
+    canvas_eta = DrawUtils.GetCanvas("canvas_dRjetstau")
+    DrawUtils.PlotHistList(canvas_eta, hists['dRjetstau'],"[dR]","entries")
+    DrawUtils.DrawHeader(canvas_eta, "dR(ak4jet,stau)" , "#tau reco", "c#tau_{0}=1000mm")
+    DrawUtils.DrawLegend(canvas_eta, DrawUtils.GetHistTitlesLegend(hists["dRjetstau"]))
 
     ROOT.gApplication.Run()

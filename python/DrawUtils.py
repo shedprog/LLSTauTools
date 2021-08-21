@@ -6,6 +6,23 @@ def GetCanvas(name : str) -> ROOT.TCanvas:
     SetMyStyle()
     return c
 
+def GetCanvasPads(name : str):
+    c = ROOT.TCanvas(name, name, 1000, 1000)
+    # Upper histogram plot is pad1
+    pad1 = ROOT.TPad("pad1", "pad1", 0, 0.3, 1, 1.0)
+    pad1.SetBottomMargin(0)  # joins upper and lower plot
+    pad1.SetGridx()
+    pad1.Draw()
+    # Lower ratio plot is pad2
+    c.cd()  # returns to main canvas before defining pad2
+    pad2 = ROOT.TPad("pad2", "pad2", 0, 0.05, 1, 0.3)
+    pad2.SetTopMargin(0)  # joins upper and lower plot
+    pad2.SetBottomMargin(0.2)
+    pad2.SetGridx()
+    pad2.Draw()
+    SetMyStyle()
+    return c, pad1, pad2
+
 def PlotHistList(canvas : ROOT.TCanvas,
                  hist_list : List[ROOT.TH1],
                  x_axis_title: str,
@@ -22,7 +39,7 @@ def PlotHistList(canvas : ROOT.TCanvas,
         h.GetYaxis().SetTitle(y_axis_title)
         h.SetLineColor(ColorIterator(i))
         h.SetLineWidth(3)
-        h.Draw("same") if i!=0 else h.Draw()
+        h.Draw("histo same") if i!=0 else h.Draw("histo")
     hist_list[0].SetMaximum(max_y+0.1*max_y) # to fix ranges 
     canvas.Modified()
     canvas.Update()
@@ -31,7 +48,10 @@ def GetHistTitlesLegend(hist_list : List[ROOT.TH1]) -> ROOT.TLegend:
     legend = ROOT.TLegend(0.6, 0.7, 0.9, 0.9)
     for hist in hist_list:
         t = hist.GetTitle()
-        legend.AddEntry(hist.GetValue(), t, "l")
+        try:
+            legend.AddEntry(hist.GetValue(), t, "l")
+        except:
+            legend.AddEntry(hist, t, "l")
     return legend
 
 def DrawLegend(canvas : ROOT.TCanvas,
@@ -107,3 +127,35 @@ def ColorIterator(index : int) -> int:
                 [x - 5 for x in colow_wheel] +\
                 [x - 10 for x in colow_wheel]
     return color_idx[index]
+
+def createRatio(h1, h2, name):
+    h3 = h1.Clone(name)
+    h3.SetLineColor(ROOT.kBlack)
+    h3.SetMarkerStyle(21)
+    h3.SetTitle("")
+    h3.SetMinimum(0.0)
+    h3.SetMaximum(1.0)
+    # Set up plot for markers and errors
+    h3.Sumw2()
+    h3.SetStats(0)
+    h3.Divide(h2)
+
+    # Adjust y-axis settings
+    y = h3.GetYaxis()
+    y.SetTitle("ratio")
+    y.SetNdivisions(505)
+    y.SetTitleSize(20)
+    y.SetTitleFont(43)
+    y.SetTitleOffset(1.55)
+    y.SetLabelFont(43)
+    y.SetLabelSize(15)
+
+    # Adjust x-axis settings
+    x = h3.GetXaxis()
+    x.SetTitleSize(20)
+    x.SetTitleFont(43)
+    x.SetTitleOffset(4.0)
+    x.SetLabelFont(43)
+    x.SetLabelSize(15)
+
+    return h3

@@ -62,18 +62,40 @@ public:
     {
       double up_lim = 200;
       double match_dR = 0.1;
+      double tight_dR = 0.05;
 
       // Lost Track to stau match
       TH2D *h2_lostTrack_stau = new TH2D("h2_lostTrack_stau","lostTrack match to stau within dR",200,0,up_lim, 200, 0, 1.5);
       TH2D *h2_lostTrack_pion = new TH2D("h2_lostTrack_pion","lostTrack match to pion within dR",200,0,up_lim, 200, 0, 1.5);
-
       // pfCand
       TH2D *h2_pfCand_stau = new TH2D("h2_pfCand_stau","pfCand match to stau within dR",200,0,up_lim, 200, 0, 1.5);
       TH2D *h2_pfCand_pion = new TH2D("h2_pfCand_pion","pfCand match to pion within dR",200,0,up_lim, 200, 0, 1.5);
-
       // isoTrack
       TH2D *h2_isoTrack_stau = new TH2D("h2_isoTrack_stau","isoTrack match to stau within dR",200,0,up_lim, 200, 0, 1.5);
       TH2D *h2_isoTrack_pion = new TH2D("h2_isoTrack_pion","isoTrack match to pion within dR",200,0,up_lim, 200, 0, 1.5);
+
+      // dR between the object and stau/pion
+      // Lost Track to stau match
+      TH2D *h2_dR_lostTrack_stau = new TH2D("h2_dR_lostTrack_stau","dR between lostTrack and stau within",200,0,up_lim, 200, 0, 1.5);
+      TH2D *h2_dR_lostTrack_pion = new TH2D("h2_dR_lostTrack_pion","dR between lostTrack and pion within",200,0,up_lim, 200, 0, 1.5);
+      // pfCand
+      TH2D *h2_dR_pfCand_stau = new TH2D("h2_dR_pfCand_stau","dR between pfCand and stau within",200,0,up_lim, 200, 0, 1.5);
+      TH2D *h2_dR_pfCand_pion = new TH2D("h2_dR_pfCand_pion","dR between pfCand and pion within",200,0,up_lim, 200, 0, 1.5);
+      // isoTrack
+      TH2D *h2_dR_isoTrack_stau = new TH2D("h2_dR_isoTrack_stau","dR between isoTrack and stau within",200,0,up_lim, 200, 0, 1.5);
+      TH2D *h2_dR_isoTrack_pion = new TH2D("h2_dR_isoTrack_pion","dR between isoTrack and pion within",200,0,up_lim, 200, 0, 1.5);
+
+      // Numerical estimate of cand match
+      TH1D *h1_Tau_h_all = new TH1D("h1_Tau_h_all","All hadronic taus delta_vtx",2000,0,up_lim);
+      TH1D *h1_Tau_h_reco = new TH1D("h1_Tau_h_reco","Reco hadronic taus delta_vtx",2000,0,up_lim);
+      // match of the stau (at least one match)
+      TH1D *h1_stau_pfCand = new TH1D("h1_pfCand_stau","pfCand matches stau within dR",2000,0,up_lim);
+      TH1D *h1_stau_lostTrack = new TH1D("h1_lostTrack_stau","lostTrack matches stau within dR",2000,0,up_lim);
+      TH1D *h1_stau_isoTrack = new TH1D("h1_isoTrack_stau","pfCand matches stau within dR",2000,0,up_lim);
+      // match of the pion (at least one match)
+      TH1D *h1_pion_pfCand = new TH1D("h1_pfCand_pion","pfCand matches pion within dR",2000,0,up_lim);
+      TH1D *h1_pion_lostTrack = new TH1D("h1_lostTrack_pion","lostTrack matches pion within dR",2000,0,up_lim);
+      TH1D *h1_pion_isoTrack = new TH1D("h1_isoTrack_pion","pfCand matches pion within dR",2000,0,up_lim);
 
       for(size_t current_entry = 0; current_entry < n_entries; ++current_entry)
       {
@@ -103,6 +125,8 @@ public:
           const std::vector<reco_tau::gen_truth::GenParticle>& all_gen_particles = genLeptons.allParticles();
           int genTauDecayMode = gen_dm_encode(genLeptons.nChargedHadrons(), genLeptons.nNeutralHadrons());
 
+          // if(genTauDecayMode == 1) continue;
+
           double disp{-9};
           LorentzVectorXYZ gentau_vis = genLeptons.visibleP4();
           ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<double>> stau_p4;
@@ -110,8 +134,8 @@ public:
           for(auto genparticle_: all_gen_particles)
           {
             if(std::abs(genparticle_.pdgId) == 15 && genparticle_.isLastCopy)
-              disp = genparticle_.vertex.r();
-              // disp = genparticle_.vertex.rho();
+              //disp = genparticle_.vertex.r();
+              disp = genparticle_.vertex.rho();
             if(std::abs(genparticle_.pdgId) == 1000015 && genparticle_.isLastCopy)
               stau_p4 = genparticle_.p4;
           }
@@ -119,32 +143,72 @@ public:
           assert(disp != -9);
           assert(stau_p4.X() != 0.0);
 
+          h1_Tau_h_all->Fill(disp);
+          if(tau.tau_decayMode >= 0) h1_Tau_h_reco->Fill(disp);
+
           double dR_gentau_stau = ROOT::Math::VectorUtil::DeltaR(gentau_vis, stau_p4);
 
           // Fitting and Filling matched lostTracks/pfCand/isoTrack
-          auto lazyGenMatch = [&](const std::string& prefix, TH2D* h_stua, TH2D* h_pion) -> void {
+          auto lazyGenMatch = [&](const std::string& prefix, TH2D* h_stua, TH2D* h_pion, bool threshold, bool staumatch) -> bool {
+
+            bool gen_match = false;
+
+            float best_dRstau = std::numeric_limits<float>::max();
+            float best_dRpion = std::numeric_limits<float>::max();
+
             for(int i=0; i < tauTuple->get<std::vector<float>>(prefix+"_pt").size(); i++)
             {
               if(tauTuple->get<std::vector<float>>(prefix+"_pt")[i] < 3.0) continue;
+              if(TMath::Abs(tauTuple->get<std::vector<int>>(prefix+"_charge")[i]) != 1) continue;
+
               float eta = tauTuple->get<std::vector<float>>(prefix+"_eta")[i];
               float phi = tauTuple->get<std::vector<float>>(prefix+"_phi")[i];
 
-              if( TMath::Sqrt( TMath::Power(eta-stau_p4.eta(),2) + TMath::Power(phi-stau_p4.phi(),2) ) < match_dR )
-                h_stua->Fill(disp, dR_gentau_stau);
+              float dRstau = TMath::Sqrt( TMath::Power(eta-stau_p4.eta(),2) + TMath::Power(phi-stau_p4.phi(),2) );
+              best_dRstau = std::min(dRstau, best_dRstau);
 
               for(size_t gen_idx = 0; gen_idx < tau.genParticle_pdgId.size(); ++gen_idx)
               {
+                if(TMath::Abs(tau.genParticle_pdgId[gen_idx]) != 211) continue;
                 float eta_gen = tau.genParticle_eta[gen_idx];
                 float phi_gen = tau.genParticle_phi[gen_idx];
-                if( TMath::Sqrt( TMath::Power(eta-eta_gen,2) + TMath::Power(phi-phi_gen,2) ) < match_dR )
-                  h_pion->Fill(disp, dR_gentau_stau);
+
+                float dRpion = TMath::Sqrt( TMath::Power(eta-eta_gen,2) + TMath::Power(phi-phi_gen,2) );
+                best_dRpion = std::min(dRpion, best_dRpion);
               }
             }
+
+            if(best_dRpion < std::numeric_limits<float>::max()){
+              if(!staumatch && best_dRpion < tight_dR) gen_match=true;
+              if(threshold &&  best_dRpion < match_dR) h_pion->Fill(disp, dR_gentau_stau);
+              else if(!threshold) h_pion->Fill(disp, best_dRpion);
+            }
+
+            if(best_dRstau < std::numeric_limits<float>::max()){
+              if(staumatch && best_dRstau < tight_dR) gen_match=true;
+              if(threshold && best_dRstau < match_dR) h_stua->Fill(disp, dR_gentau_stau);
+              else if(!threshold) h_stua->Fill(disp, best_dRstau);
+            }
+            
+            return gen_match;
           };
 
-          lazyGenMatch("lostTrack", h2_lostTrack_stau, h2_lostTrack_pion);
-          lazyGenMatch("pfCand", h2_pfCand_stau, h2_pfCand_pion);
-          lazyGenMatch("isoTrack", h2_isoTrack_stau, h2_isoTrack_pion);
+          auto lostTrack_match = lazyGenMatch("lostTrack", h2_lostTrack_stau, h2_lostTrack_pion, true, true);
+          auto pfCand_match = lazyGenMatch("pfCand", h2_pfCand_stau, h2_pfCand_pion, true, true);
+          auto isoTrack_match = lazyGenMatch("isoTrack", h2_isoTrack_stau, h2_isoTrack_pion, true, true);
+
+          if(lostTrack_match) h1_stau_lostTrack->Fill(disp);
+          if(pfCand_match) h1_stau_pfCand->Fill(disp);
+          if(isoTrack_match) h1_stau_isoTrack->Fill(disp);
+
+          lostTrack_match = lazyGenMatch("lostTrack", h2_dR_lostTrack_stau, h2_dR_lostTrack_pion, false, false);
+          pfCand_match = lazyGenMatch("pfCand", h2_dR_pfCand_stau, h2_dR_pfCand_pion, false, false);
+          isoTrack_match = lazyGenMatch("isoTrack", h2_dR_isoTrack_stau, h2_dR_isoTrack_pion, false, false);
+
+          if(lostTrack_match) h1_pion_lostTrack->Fill(disp);
+          if(pfCand_match) h1_pion_pfCand->Fill(disp);
+          if(isoTrack_match) h1_pion_isoTrack->Fill(disp);
+
         }
       }
       TFile *outputFile = new TFile(outputfile.c_str(),"RECREATE");
@@ -154,6 +218,20 @@ public:
       h2_pfCand_pion->Write();
       h2_isoTrack_stau->Write();
       h2_isoTrack_pion->Write();
+      h2_dR_lostTrack_stau->Write();
+      h2_dR_lostTrack_pion->Write();
+      h2_dR_pfCand_stau->Write();
+      h2_dR_pfCand_pion->Write();
+      h2_dR_isoTrack_stau->Write();
+      h2_dR_isoTrack_pion->Write();
+      h1_Tau_h_all->Write();
+      h1_Tau_h_reco->Write();
+      h1_stau_pfCand->Write();
+      h1_stau_lostTrack->Write();
+      h1_stau_isoTrack->Write();
+      h1_pion_pfCand->Write();
+      h1_pion_lostTrack->Write();
+      h1_pion_isoTrack->Write();
       outputFile->Close();
     }
 
