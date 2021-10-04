@@ -62,7 +62,8 @@ public:
     {
       double up_lim = 200;
       double match_dR = 0.1;
-      double tight_dR = 0.05;
+      // double tight_dR = 0.05;
+      double tight_dR = 0.1;
 
       // Lost Track to stau match
       TH2D *h2_lostTrack_stau = new TH2D("h2_lostTrack_stau","lostTrack match to stau within dR",200,0,up_lim, 200, 0, 1.5);
@@ -87,6 +88,7 @@ public:
 
       // Numerical estimate of cand match
       TH1D *h1_Tau_h_all = new TH1D("h1_Tau_h_all","All hadronic taus delta_vtx",2000,0,up_lim);
+      TH1D *h1_Tau_h_jet = new TH1D("h1_Tau_h_jet","All hadronic taus with jet delta_vtx",2000,0,up_lim);
       TH1D *h1_Tau_h_reco = new TH1D("h1_Tau_h_reco","Reco hadronic taus delta_vtx",2000,0,up_lim);
       // match of the stau (at least one match)
       TH1D *h1_stau_pfCand = new TH1D("h1_pfCand_stau","pfCand matches stau within dR",2000,0,up_lim);
@@ -145,6 +147,9 @@ public:
 
           h1_Tau_h_all->Fill(disp);
           if(tau.tau_decayMode >= 0) h1_Tau_h_reco->Fill(disp);
+
+          if(tau.jet_index<0) continue;
+          h1_Tau_h_jet->Fill(disp);
 
           double dR_gentau_stau = ROOT::Math::VectorUtil::DeltaR(gentau_vis, stau_p4);
 
@@ -225,6 +230,7 @@ public:
       h2_dR_isoTrack_stau->Write();
       h2_dR_isoTrack_pion->Write();
       h1_Tau_h_all->Write();
+      h1_Tau_h_jet->Write();
       h1_Tau_h_reco->Write();
       h1_stau_pfCand->Write();
       h1_stau_lostTrack->Write();

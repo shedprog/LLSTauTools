@@ -34,6 +34,7 @@ def PlotHistList(canvas : ROOT.TCanvas,
     canvas.cd()
     max_y = 0
     for i, h in enumerate(hist_list):
+        h.Scale(1.0/h.Integral())
         max_y = max(max_y, h.GetMaximum())
         h.GetXaxis().SetTitle(x_axis_title)
         h.GetYaxis().SetTitle(y_axis_title)
@@ -134,7 +135,7 @@ def createRatio(h1, h2, name):
     h3.SetMarkerStyle(21)
     h3.SetTitle("")
     h3.SetMinimum(0.0)
-    h3.SetMaximum(1.0)
+    h3.SetMaximum(1.1)
     # Set up plot for markers and errors
     h3.Sumw2()
     h3.SetStats(0)

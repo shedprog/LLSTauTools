@@ -15,7 +15,7 @@ if __name__ == "__main__":
     The following script is performing the comperison of kinematic
     varaiables for different mass points. The script is run
     above BigTauTuple files that are created with TauMLTools.
-    python ./MassPointsKinem.py <PATH_TO_TAUBIGTUPLES>
+    python ./DF-MassPointsKinem.py <PATH_TO_TAUBIGTUPLES>
     '''
 
     path_to_files = sys.argv[1]
