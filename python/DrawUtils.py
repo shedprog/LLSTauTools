@@ -97,7 +97,7 @@ def DrawHeader(pad : ROOT.TPad,
     cmsLine = ROOT.TLatex()
     cmsLine.SetTextFont(62)
     cmsLine.SetTextSize(textSize)
-    cmsLine.DrawLatexNDC(0.33, 0.92, "CMS")
+    # cmsLine.DrawLatexNDC(0.33, 0.92, "CMS")
 
     cmsTextLine = ROOT.TLatex()
     cmsTextLine.SetTextFont(52)
