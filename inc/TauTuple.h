@@ -68,6 +68,7 @@ this code is coppied from https://github.com/cms-tau-pog/TauMLTools
     VAR(Int_t, entry_index) /* Index of the entry in the event */ \
     VAR(Int_t, total_entries) /* The total number of entries in the event */ \
     /* SUSY stau Property */ \
+    VAR(Float_t, signal_class) /* class for tau-jet tag*/ \
     VAR(Float_t, susy_mstau) /* mass of stau (taken from LuminosityBlock configDescription)*/ \
     VAR(Float_t, susy_mlsp) /* mass of lsp (taken from LuminosityBlock configDescription)*/ \
     VAR(Float_t, susy_ctau) /* life time of the stau (taken from LuminosityBlock configDescription)*/ \
