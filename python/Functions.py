@@ -3,6 +3,26 @@
 class DataFrameFunc:
 
     @staticmethod
+    def sum_up_var(var: str):
+        sum=f'''
+        std::vector<size_t> indices(pfCand_pt.size());
+        std::iota(indices.begin(), indices.end(), 0);
+
+        // sort PfCands by pt
+        std::sort(indices.begin(), indices.end(), [&](size_t a, size_t b) {'{'}
+            return pfCand_pt.at(a) > pfCand_pt.at(b);
+        {'}'});
+        size_t upper_index = indices.size()<50 ? indices.size() : 50;
+        float sum = 0.0;
+        for(size_t i = 0; i < upper_index; i++) {'{'}
+            sum+={var}.at(i);
+        {'}'}
+
+        return sum;
+        '''
+        return sum
+
+    @staticmethod
     def get_gen_info():
         get_kinem='''
         auto genLeptons = 

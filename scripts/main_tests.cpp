@@ -20,7 +20,6 @@ template<> struct FeaturesHelper<PfCand2> {
 static constexpr size_t size = 15;
 };
 
-
 using FeatureTuple = std::tuple<PfCand1, PfCand2>;
 
 template<typename T, T... ints>
@@ -34,14 +33,39 @@ void print_sequence(std::integer_sequence<T, ints...> int_seq)
 template<size_t... I>
 std::vector<size_t> CreateStartIndices(const int start0, std::index_sequence<I...> idx_seq)
 {
+  auto getStart = [&](size_t index) -> size_t{
+    // using TypeTest = std::tuple_element_t<index, FeatureTuple>;
+    return FeaturesHelper<std::tuple_element_t<index, FeatureTuple>>::size  + start0 + index;
+  };
 
   std::vector<size_t> start(idx_seq.size());
-  ((
-    using tuple_element =  std::tuple_element_t<I, FeatureTuple>;
-    start[I] = FeaturesHelper<tuple_element>::size  + start0 + I
-    ), ...);
+  ((start[I] = getStart(I)), ...);
   return start;
 }
+
+// to gen an idex of ntuple:
+template <typename T, typename Tuple>
+struct Index;
+
+template <typename T, typename... Args>
+struct Index<T, std::tuple<T, Args...>> {
+    static constexpr std::size_t value = 0;
+};
+
+template <typename T, typename U, typename... Args>
+struct Index<T, std::tuple<U, Args...>> {
+    static constexpr std::size_t value = 1 + Index<T, std::tuple<Args...>>::value;
+};
+
+
+// Testino:
+template <typename Tuple>
+struct Testino;
+
+template <typename... Args>
+struct Testino<std::tuple<Args...>> {
+  static constexpr size_t lol = 999;
+};
 
 void main_tests()
 {
@@ -60,4 +84,19 @@ void main_tests()
   print_sequence(std::make_integer_sequence<unsigned, 4>{});
 
   // --------------------------------
+  auto vec = CreateStartIndices(11, std::make_index_sequence<nFeaturesTypes_v>{});
+  for(auto i: vec) {
+    std::cout << i << " ";
+  }
+
+  // --------------------------------
+  std::cout << "ElementIndex\n";
+  std::cout << Index< PfCand1, FeatureTuple >::value << std::endl;
+  std::cout << Index< PfCand2, FeatureTuple >::value << std::endl;
+
+  // --------------------------------
+  std::cout << Testino<std::tuple<int, int>>::lol << std::endl;
+  
+  //
+  Data a();
 } 

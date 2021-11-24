@@ -19,10 +19,10 @@ vars = [
     ["pfCand_eta",                  70, -2.5, 2.5 ],                        
     ["pfCand_phi",                  70, -3.15, 3.15 ],            
     ["pfCand_mass",                 70, -0.1, 0.2 ],                      
-    ["pfCand_charge",               20,   -5.0, 5.0 ],         
-    ["pfCand_particleType",         20,    0.0, 10.0],           
-    ["pfCand_pvAssociationQuality", 20,    0.0, 10.0],             
-    ["pfCand_fromPV",               10,    0.0, 5],                     
+    ["pfCand_charge",               20,  -5.0, 5.0 ],         
+    ["pfCand_particleType",         20,   0.0, 10.0],           
+    ["pfCand_pvAssociationQuality", 20,   0.0, 10.0],             
+    ["pfCand_fromPV",               10,   0.0, 5],                     
     ["pfCand_puppiWeight",          20,   0.0, 1.0],                         
     ["pfCand_puppiWeightNoLep",     20,   0.0, 1.0],                        
     ["pfCand_lostInnerHits",        70,  -1.0, 3.0],                    
@@ -48,7 +48,7 @@ vars = [
     # ["jet_phi",                     1000, -3.15, 3.15 ],                  
     ["pfCand_deta",                 70, -1.0, 1.0 ],                    
     ["pfCand_dphi",                 70, -1.0, 1.0 ],
-    ["n_pfCand",                   100,    0, 300]                       
+    ["n_pfCand",                   100,    0, 300 ]                       
 ]
 
 if __name__ == "__main__":
@@ -72,17 +72,26 @@ if __name__ == "__main__":
     df = ROOT.RDataFrame("taus", args.path+"/*.root")
     # df = ROOT.RDataFrame("taus", args.path)
 
-    fs = [df.Filter('signal_class==0', 'Background'),
-          df.Filter('signal_class==1', 'Signal')]
+    fs = [df.Filter('signal_class==1', 'Signal'),
+          df.Filter('signal_class==0', 'Background')]
 
     hists = [{},{}]
-    names = ["QCD", "Signal"]
+    names = ["Signal", "QCD"]
 
     for i, f in enumerate(fs):
         f = f.Define('pfCand_deta','jet_eta-pfCand_eta').Define('pfCand_dphi','jet_phi-pfCand_phi')
         f = f.Define('n_pfCand', 'pfCand_pt.size()')
+
         for var in vars:
             hists[i][var[0]] = f.Histo1D((var[0], names[i], var[1], var[2], var[3]), var[0])
+        # sums: here we try to calculate sums because they might be differ for two datasets
+        # the scale is multiplied by 50 expecting that we take 50 pfCands
+        for var in vars[:-1]:
+            f = f.Define("sum_"+var[0], MyFunc.DataFrameFunc.sum_up_var(var[0]))
+            hists[i]["sum_"+var[0]] = f.Histo1D(("sum_"+var[0], names[i], var[1],
+                                                var[2] if var[2]>=0 else var[2]*50,var[3]*50),
+                                                "sum_"+var[0])
+
                                                
     print('All stats:')
     allCutsReport = df.Report()
@@ -94,7 +103,24 @@ if __name__ == "__main__":
         canvas = DrawUtils.GetCanvas("canvas")
         DrawUtils.PlotHistList(canvas, [hists[1][var],hists[0][var]], "[-]", "entries")
         DrawUtils.DrawHeader(canvas, var , "", "c#tau_{0}=1000mm")
-        DrawUtils.DrawLegend(canvas, DrawUtils.GetHistTitlesLegend([hists[1][var],hists[0][var]]))
+        # DrawUtils.DrawLegend(canvas, )
+        l = DrawUtils.GetHistTitlesLegend([hists[1][var],hists[0][var]])
+        l.Draw()
+        canvas.Modified()
+        canvas.Update()
+        canvas.SaveAs(args.output+"/var_"+var+".png")
+
+    for var_list in vars[:-1]:
+        var = "sum_"+var_list[0]
+        print(var, "is saved")
+        canvas = DrawUtils.GetCanvas("canvas")
+        DrawUtils.PlotHistList(canvas, [hists[1][var],hists[0][var]], "[-]", "entries")
+        DrawUtils.DrawHeader(canvas, var , "", "c#tau_{0}=1000mm")
+        # DrawUtils.DrawLegend(canvas, DrawUtils.GetHistTitlesLegend([hists[1][var],hists[0][var]]))
+        l = DrawUtils.GetHistTitlesLegend([hists[1][var],hists[0][var]])
+        l.Draw()
+        canvas.Modified()
+        canvas.Update()
         canvas.SaveAs(args.output+"/var_"+var+".png")
 
     # ROOT.gApplication.Run()
