@@ -27,8 +27,10 @@ class DataFrameFunc:
         get_kinem='''
         auto genLeptons = 
         reco_tau::gen_truth::GenLepton::fromRootTuple<ROOT::VecOps::RVec>(
+                        true,
                         genLepton_lastMotherIndex,
                         genParticle_pdgId,
+                        genParticle_status,
                         genParticle_mother,
                         genParticle_charge,
                         genParticle_isFirstCopy,
