@@ -69,9 +69,6 @@ this code is coppied from https://github.com/cms-tau-pog/TauMLTools
     VAR(Int_t, total_entries) /* The total number of entries in the event */ \
     /* SUSY stau Property */ \
     VAR(Float_t, signal_class) /* class for tau-jet tag*/ \
-    VAR(Float_t, susy_mstau) /* mass of stau (taken from LuminosityBlock configDescription)*/ \
-    VAR(Float_t, susy_mlsp) /* mass of lsp (taken from LuminosityBlock configDescription)*/ \
-    VAR(Float_t, susy_ctau) /* life time of the stau (taken from LuminosityBlock configDescription)*/ \
     /* Gen lepton with the full decay chain */ \
     VAR(Int_t, genLepton_index) /* index of the gen lepton */ \
     VAR(Int_t, genLepton_kind) /* kind of the gen lepton:

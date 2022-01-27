@@ -25,6 +25,7 @@ if __name__ == "__main__":
     h1_pfCand_to_stau_match = file.Get('h1_pfCand_stau')
     h1_lostTrack_to_pion_match = file.Get('h1_lostTrack_pion')
     h1_pfCand_to_pion_match = file.Get('h1_pfCand_pion')
+    h1_pfCand_to_pion0_match = file.Get('h1_pfCand_pion0')
 
     h1_Tau_h_all.SetTitle("All hadronic taus")
     h1_Tau_h_jet.SetTitle("All hadronic taus with Jet")
@@ -33,6 +34,7 @@ if __name__ == "__main__":
     h1_pfCand_to_stau_match.SetTitle("#tilde{#tau} match to pfCand")
     h1_lostTrack_to_pion_match.SetTitle("#pi^{#pm} match to lostTrack")
     h1_pfCand_to_pion_match.SetTitle("#pi^{#pm} match to pfCand")
+    h1_pfCand_to_pion0_match.SetTitle("#pi0  match to pfCand")
 
     h1_Tau_h_all.SetMinimum(50.0)
     h1_Tau_h_jet.SetMinimum(50.0)
@@ -41,6 +43,7 @@ if __name__ == "__main__":
     h1_pfCand_to_stau_match.SetMinimum(50.0)
     h1_lostTrack_to_pion_match.SetMinimum(50.0)
     h1_pfCand_to_pion_match.SetMinimum(50.0)
+    h1_pfCand_to_pion0_match.SetMinimum(50.0)
 
     # GetXaxis()->SetRangeUser(min, max);
     MergeBin = 15
@@ -51,14 +54,17 @@ if __name__ == "__main__":
     h1_pfCand_to_stau_match.Rebin(MergeBin)
     h1_lostTrack_to_pion_match.Rebin(MergeBin)
     h1_pfCand_to_pion_match.Rebin(MergeBin)
+    h1_pfCand_to_pion0_match.Rebin(MergeBin)
+    
  
-    h1_Tau_h_all.GetXaxis().SetRangeUser(-1.0, 120.0)
-    h1_Tau_h_jet.GetXaxis().SetRangeUser(-1.0, 120.0)
-    h1_Tau_h_reco.GetXaxis().SetRangeUser(-1.0, 120.0)
-    h1_lostTrack_to_stau_match.GetXaxis().SetRangeUser(-1.0, 120.0)
-    h1_pfCand_to_stau_match.GetXaxis().SetRangeUser(-1.0, 120.0)
-    h1_lostTrack_to_pion_match.GetXaxis().SetRangeUser(-1.0, 120.0)
-    h1_pfCand_to_pion_match.GetXaxis().SetRangeUser(-1.0, 120.0)
+    h1_Tau_h_all.GetXaxis().SetRangeUser(-1.0, 50.0)
+    h1_Tau_h_jet.GetXaxis().SetRangeUser(-1.0, 50.0)
+    h1_Tau_h_reco.GetXaxis().SetRangeUser(-1.0, 50.0)
+    h1_lostTrack_to_stau_match.GetXaxis().SetRangeUser(-1.0, 50.0)
+    h1_pfCand_to_stau_match.GetXaxis().SetRangeUser(-1.0, 50.0)
+    h1_lostTrack_to_pion_match.GetXaxis().SetRangeUser(-1.0, 50.0)
+    h1_pfCand_to_pion_match.GetXaxis().SetRangeUser(-1.0, 50.0)
+    h1_pfCand_to_pion0_match.GetXaxis().SetRangeUser(-1.0, 50.0)
 
     hists = [
         h1_Tau_h_all,
@@ -66,8 +72,9 @@ if __name__ == "__main__":
         h1_Tau_h_reco,
         h1_lostTrack_to_stau_match,
         h1_pfCand_to_stau_match,
-        h1_lostTrack_to_pion_match,
-        h1_pfCand_to_pion_match
+        # h1_lostTrack_to_pion_match,
+        # h1_pfCand_to_pion_match,
+        # h1_pfCand_to_pion0_match,
     ]
 
     canvas ,pad1, pad2 = DrawUtils.GetCanvasPads("canvas")

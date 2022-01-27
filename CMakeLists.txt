@@ -28,3 +28,6 @@ target_link_libraries(TauTuple_LifeTimeTauEfficiency ${ROOT_LIBRARIES} ${Boost_L
 
 add_executable(TauTuple_pfCandStudy bin/TauTuple_pfCandStudy.cpp ${SOURCES})
 target_link_libraries(TauTuple_pfCandStudy ${ROOT_LIBRARIES} ${Boost_LIBRARIES})
+
+add_executable(TauTuple_TauDecayCheck bin/TauTuple_TauDecayCheck.cpp ${SOURCES})
+target_link_libraries(TauTuple_TauDecayCheck ${ROOT_LIBRARIES} ${Boost_LIBRARIES})
