@@ -36,17 +36,17 @@ if __name__ == "__main__":
     h1_pfCand_to_pion_match.SetTitle("#pi^{#pm} match to pfCand")
     h1_pfCand_to_pion0_match.SetTitle("#pi0  match to pfCand")
 
-    h1_Tau_h_all.SetMinimum(50.0)
-    h1_Tau_h_jet.SetMinimum(50.0)
-    h1_Tau_h_reco.SetMinimum(50.0)
-    h1_lostTrack_to_stau_match.SetMinimum(50.0)
-    h1_pfCand_to_stau_match.SetMinimum(50.0)
-    h1_lostTrack_to_pion_match.SetMinimum(50.0)
-    h1_pfCand_to_pion_match.SetMinimum(50.0)
-    h1_pfCand_to_pion0_match.SetMinimum(50.0)
+    h1_Tau_h_all.SetMinimum(150.0)
+    h1_Tau_h_jet.SetMinimum(150.0)
+    h1_Tau_h_reco.SetMinimum(60.0)
+    h1_lostTrack_to_stau_match.SetMinimum(150.0)
+    h1_pfCand_to_stau_match.SetMinimum(150.0)
+    h1_lostTrack_to_pion_match.SetMinimum(150.0)
+    h1_pfCand_to_pion_match.SetMinimum(150.0)
+    h1_pfCand_to_pion0_match.SetMinimum(150.0)
 
     # GetXaxis()->SetRangeUser(min, max);
-    MergeBin = 15
+    MergeBin = 10
     h1_Tau_h_all.Rebin(MergeBin)
     h1_Tau_h_jet.Rebin(MergeBin)
     h1_Tau_h_reco.Rebin(MergeBin)
@@ -70,16 +70,16 @@ if __name__ == "__main__":
         h1_Tau_h_all,
         h1_Tau_h_jet,
         h1_Tau_h_reco,
-        h1_lostTrack_to_stau_match,
-        h1_pfCand_to_stau_match,
-        # h1_lostTrack_to_pion_match,
-        # h1_pfCand_to_pion_match,
-        # h1_pfCand_to_pion0_match,
+        # h1_lostTrack_to_stau_match,
+        # h1_pfCand_to_stau_match,
+        h1_lostTrack_to_pion_match,
+        h1_pfCand_to_pion_match,
+        h1_pfCand_to_pion0_match,
     ]
 
     canvas ,pad1, pad2 = DrawUtils.GetCanvasPads("canvas")
     DrawUtils.PlotHistList(pad1, hists, "[cm]", "entries")
-    DrawUtils.DrawHeader(pad1, "match dR<0.1" , "#tau reco", "c#tau_{0}=1000mm")
+    DrawUtils.DrawHeader(pad1, "match dR<0.1 rel<0.1" , "#tau reco", "c#tau_{0}=1000mm")
     legend = DrawUtils.GetHistTitlesLegend(hists)
     DrawUtils.DrawLegend(pad1, legend)
     pad1.SetLogy()
@@ -98,4 +98,23 @@ if __name__ == "__main__":
     legend2 = DrawUtils.GetHistTitlesLegend([ratio_h, ratio_h_jet])
     DrawUtils.DrawLegend(pad2, legend2)
     canvas.cd()
-    canvas.SaveAs("pfCand_match.pdf")
+    canvas.SaveAs("efficiency_main.pdf")
+
+
+    pf_hists = [
+        DrawUtils.createRatio(h1_lostTrack_to_pion_match, h1_Tau_h_all,"lostTrack_to_pion"),
+        DrawUtils.createRatio(h1_pfCand_to_pion_match, h1_Tau_h_all,"pfCand_to_pion"),
+        DrawUtils.createRatio(h1_pfCand_to_pion0_match, h1_Tau_h_all,"pfCand_to_pion0"),
+    ]
+    pf_hists[0].SetTitle("#pi^{#pm} match to lostTrack")
+    pf_hists[1].SetTitle("#pi^{#pm} match to pfCand")
+    pf_hists[2].SetTitle("#pi0  match to pfCand")
+
+    canvas_pf = DrawUtils.GetCanvas("canvas_pf")
+    canvas_pf.cd()
+    DrawUtils.PlotHistList(canvas_pf, pf_hists, "displacement [cm]", "entries")
+    DrawUtils.DrawHeader(canvas_pf, "match dR<0.1 rel<0.1" , "#tau reco", "c#tau_{0}=1000mm")
+    legend = DrawUtils.GetHistTitlesLegend(pf_hists)
+    DrawUtils.DrawLegend(canvas_pf, legend)
+    canvas_pf.SaveAs("efficiency_pfCand.pdf")
+

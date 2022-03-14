@@ -62,8 +62,8 @@ public:
     {
       double up_lim = 200;
       double match_dR = 0.1;
-      // double tight_dR = 0.05;
-      // double tight_dR = 0.1;
+      double match_pt_rel = 0.1; // 20% by the relative pt (for pi0 and pi+-)
+      double pfCand_MinPt = 1.0; // GeV consider only with bigger pt
 
       // // Lost Track to stau match
       // TH2D *h2_lostTrack_stau = new TH2D("h2_lostTrack_stau","lostTrack match to stau within dR",200,0,up_lim, 200, 0, 1.5);
@@ -111,11 +111,11 @@ public:
 
         if(tau.genLepton_kind==5 && tau.genLepton_vis_pt>=10.0) // to take only hadronic Taus
         { 
-          auto genLeptons = reco_tau::gen_truth::GenLepton::fromRootTuple<std::vector>(
-                            true,
+          auto genLeptons = reco_tau::gen_truth::GenLepton::fromRootTuple
+                            <std::vector<Int_t>, std::vector<Long64_t>, std::vector<Float_t>>
+                            (
                             tau.genLepton_lastMotherIndex,
                             tau.genParticle_pdgId,
-                            tau.genParticle_status,
                             tau.genParticle_mother,
                             tau.genParticle_charge,
                             tau.genParticle_isFirstCopy,
@@ -140,18 +140,17 @@ public:
 
           double disp{-9};
           LorentzVectorXYZ gentau_vis = genLeptons.visibleP4();
-          ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<double>> stau_p4;
+          // ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<double>> stau_p4;
 
           for(auto genparticle_: all_gen_particles)
           {
             if(std::abs(genparticle_.pdgId) == 15 && genparticle_.isLastCopy){
-              //disp = genparticle_.vertex.r();
-              disp = genparticle_.vertex.rho();
+              disp = genparticle_.vertex.rho(); //disp = genparticle_.vertex.r();
             }
 
-            if(std::abs(genparticle_.pdgId) == 1000015 && genparticle_.isLastCopy) {
-              stau_p4 = genparticle_.p4;
-            }
+            // if(std::abs(genparticle_.pdgId) == 1000015 && genparticle_.isLastCopy) {
+            //   stau_p4 = genparticle_.p4;
+            // }
           }
 
           if(disp == -9) {
@@ -159,10 +158,10 @@ public:
             continue;
           }
 
-          if(stau_p4.X() == 0.0) {
-            std::cout << "No SusyTau is found!" << std::endl;
-            continue;
-          }
+          // if(stau_p4.X() == 0.0) {
+          //   std::cout << "No SusyTau is found!" << std::endl;
+          //   continue;
+          // }
 
           h1_Tau_h_all->Fill(disp);
           if(tau.tau_decayMode >= 0) h1_Tau_h_reco->Fill(disp);
@@ -170,7 +169,7 @@ public:
           if(tau.jet_index<0) continue; // if there is no seeding jet
           h1_Tau_h_jet->Fill(disp);
 
-          double dR_gentau_stau = ROOT::Math::VectorUtil::DeltaR(gentau_vis, stau_p4);
+          // double dR_gentau_stau = ROOT::Math::VectorUtil::DeltaR(gentau_vis, stau_p4);
 
           // Fitting and Filling matched lostTracks/pfCand/isoTrack
           // auto lazyGenMatch = [&](const std::string& prefix, TH2D* h_stua, TH2D* h_pion, bool threshold, bool staumatch) -> bool {
@@ -236,12 +235,15 @@ public:
           // Efficiency histograms only:
           auto MatchToPfCand = [&](const std::string& prefix,
                                    const ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<double>> matchedVec, 
-                                   const float dR) -> bool
+                                   const float dR,
+                                   const bool fixType,
+                                   const int pfType) -> bool
           {
 
             for(int i=0; i < tauTuple->get<std::vector<float>>(prefix+"_pt").size(); i++)
             {
-              if(tauTuple->get<std::vector<float>>(prefix+"_pt")[i] < 1.0) continue; // skip low energetic pfCands
+              float pt = tauTuple->get<std::vector<float>>(prefix+"_pt")[i];
+              if( pt < pfCand_MinPt) continue; // skip low energetic pfCands
               // if(TMath::Abs(tauTuple->get<std::vector<int>>(prefix+"_charge")[i]) != 1) continue; // skip neutral pfCands
 
               float eta = tauTuple->get<std::vector<float>>(prefix+"_eta")[i];
@@ -249,16 +251,23 @@ public:
               
               // match vector to the object
               float dR_current = TMath::Sqrt( TMath::Power(eta-matchedVec.eta(),2) + TMath::Power(phi-matchedVec.phi(),2) );
-              if(dR_current < dR) return true;
+              float pt_rel = std::abs( (pt-matchedVec.pt())/matchedVec.pt() );
+
+              if( dR_current < dR && pt_rel < pfCand_MinPt ) {
+                if(fixType) {
+                  if(tauTuple->get<std::vector<Int_t>>(prefix+"_particleType")[i] == pfType) 
+                    return true;
+                } else true;
+              } 
             }
 
             return false;
           };
           
           // match stau to the object
-          if(MatchToPfCand("lostTrack", stau_p4, match_dR)) h1_stau_lostTrack->Fill(disp);
-          if(MatchToPfCand("pfCand", stau_p4, match_dR))    h1_stau_pfCand->Fill(disp);
-          if(MatchToPfCand("isoTrack", stau_p4, match_dR))  h1_stau_isoTrack->Fill(disp);
+          // if(MatchToPfCand("lostTrack", stau_p4, match_dR)) h1_stau_lostTrack->Fill(disp);
+          // if(MatchToPfCand("pfCand", stau_p4, match_dR))    h1_stau_pfCand->Fill(disp);
+          // if(MatchToPfCand("isoTrack", stau_p4, match_dR))  h1_stau_isoTrack->Fill(disp);
 
           // // match pion to the object
           bool lostTrack_match_pion = false;
@@ -280,11 +289,11 @@ public:
               );
 
             if(pdgId == 211){
-              if(MatchToPfCand("lostTrack", pion_p4, match_dR)) lostTrack_match_pion = true;
-              if(MatchToPfCand("pfCand", pion_p4, match_dR)) pfCand_match_pion = true;
-              if(MatchToPfCand("isoTrack", pion_p4, match_dR)) isoTrack_match_pion = true;
+              if(MatchToPfCand("lostTrack", pion_p4, match_dR, true, 1)) lostTrack_match_pion = true;
+              if(MatchToPfCand("pfCand", pion_p4, match_dR, true, 1)) pfCand_match_pion = true;
+              if(MatchToPfCand("isoTrack", pion_p4, match_dR, false, 1)) isoTrack_match_pion = true;
             } else if(pdgId == 111) {
-              if(MatchToPfCand("pfCand", pion_p4, match_dR)) pfCand_match_pion0 = true;
+              if(MatchToPfCand("pfCand", pion_p4, match_dR, true, 5)) pfCand_match_pion0 = true;
             }
           }
 

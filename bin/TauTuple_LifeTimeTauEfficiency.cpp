@@ -99,156 +99,162 @@ int main(int argc, char * argv[])
     tauTuple->GetEntry(current_entry);
     const auto& entry = tauTuple->data();
 
-    std::cout << std::endl;
-    std::cout << "event number :" << entry.evt << std::endl;
-    std::cout << "Gen Lepton: " << entry.genLepton_kind << std::endl;
-    //
-    size_t n_gen_particles = entry.genParticle_pdgId.size();
-    for(size_t gen_idx = 0; gen_idx < n_gen_particles; ++gen_idx)
-    {
+    // std::cout << std::endl;
+    // std::cout << "event number :" << entry.evt << std::endl;
+    // std::cout << "Gen Lepton: " << entry.genLepton_kind << std::endl;
     
-      std::cout  << "idx: " << gen_idx << " "
-      << "pdgId: " << entry.genParticle_pdgId[gen_idx] << " "
-      << "pt: " << entry.genParticle_pt[gen_idx] << " "
-      << "eta: " << entry.genParticle_eta[gen_idx] << " "
-      << "phi: " << entry.genParticle_phi[gen_idx] << " "
-      << " vtx "
-      << " " << entry.genParticle_vtx_x[gen_idx]
-      << " " << entry.genParticle_vtx_y[gen_idx]
-      << " " << entry.genParticle_vtx_z[gen_idx]
-      << std::endl;
-    }
-    std::cout << "--------------------------------------\n";
-    std::cin.ignore();
+    // size_t n_gen_particles = entry.genParticle_pdgId.size();
+    // for(size_t gen_idx = 0; gen_idx < n_gen_particles; ++gen_idx)
+    // {
     
-    // if(entry.genLepton_kind==5 && entry.genLepton_vis_pt>=10.0) // to take only hadronic Taus
-    // { 
-    //   // if(abs(entry.genLepton_vis_eta) > 2.1) continue;
-    //   // if(entry.susy_ctau!=10 || entry.susy_mlsp!=1) continue;
+    //   std::cout  << "idx: " << gen_idx << " "
+    //   << "pdgId: " << entry.genParticle_pdgId[gen_idx] << " "
+    //   << "pt: " << entry.genParticle_pt[gen_idx] << " "
+    //   << "eta: " << entry.genParticle_eta[gen_idx] << " "
+    //   << "phi: " << entry.genParticle_phi[gen_idx] << " "
+    //   << " vtx "
+    //   << " " << entry.genParticle_vtx_x[gen_idx]
+    //   << " " << entry.genParticle_vtx_y[gen_idx]
+    //   << " " << entry.genParticle_vtx_z[gen_idx]
+    //   << std::endl;
+    // }
+    // std::cout << "--------------------------------------\n";
+    // std::cin.ignore();
+    
+    if(entry.genLepton_kind==5 && entry.genLepton_vis_pt>=10.0) // to take only hadronic Taus
+    { 
+      // if(abs(entry.genLepton_vis_eta) > 2.1) continue;
+      // if(entry.susy_ctau!=10 || entry.susy_mlsp!=1) continue;
 
-    //   auto genLeptons = reco_tau::gen_truth::GenLepton::fromRootTuple<std::vector>(
-    //                      entry.genLepton_lastMotherIndex,
-    //                      entry.genParticle_pdgId,
-    //                      entry.genParticle_mother,
-    //                      entry.genParticle_charge,
-    //                      entry.genParticle_isFirstCopy,
-    //                      entry.genParticle_isLastCopy,
-    //                      entry.genParticle_pt,
-    //                      entry.genParticle_eta,
-    //                      entry.genParticle_phi,
-    //                      entry.genParticle_mass,
-    //                      entry.genParticle_vtx_x,
-    //                      entry.genParticle_vtx_y,
-    //                      entry.genParticle_vtx_z);
+      auto genLeptons = reco_tau::gen_truth::GenLepton::fromRootTuple
+                        <std::vector<Int_t>, std::vector<Long64_t>, std::vector<Float_t>>
+                        (
+                         entry.genLepton_lastMotherIndex,
+                         entry.genParticle_pdgId,
+                         entry.genParticle_mother,
+                         entry.genParticle_charge,
+                         entry.genParticle_isFirstCopy,
+                         entry.genParticle_isLastCopy,
+                         entry.genParticle_pt,
+                         entry.genParticle_eta,
+                         entry.genParticle_phi,
+                         entry.genParticle_mass,
+                         entry.genParticle_vtx_x,
+                         entry.genParticle_vtx_y,
+                         entry.genParticle_vtx_z);
 
-    //   const std::vector<reco_tau::gen_truth::GenParticle>& all_gen_particles = genLeptons.allParticles();
-    //   int genTauDecayMode = gen_dm_encode(genLeptons.nChargedHadrons(), genLeptons.nNeutralHadrons());
+      const std::vector<reco_tau::gen_truth::GenParticle>& all_gen_particles = genLeptons.allParticles();
+      int genTauDecayMode = gen_dm_encode(genLeptons.nChargedHadrons(), genLeptons.nNeutralHadrons());
 
-    //   double disp{-9}, disp_t{-9}, disp_z{-9};
-    //   double gentau_pt = genLeptons.visibleP4().Pt();
-    //   ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<double>> stau_p4;
+      double disp{-9}, disp_t{-9}, disp_z{-9};
+      double gentau_pt = genLeptons.visibleP4().Pt();
+      ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<double>> stau_p4;
 
-    //   for(auto genparticle_: all_gen_particles)
-    //   {
-    //       if(std::abs(genparticle_.pdgId) == 15 && genparticle_.isLastCopy)
-    //       {
-    //           disp = genparticle_.vertex.r();
-    //           disp_t = genparticle_.vertex.rho();
-    //           disp_z = genparticle_.vertex.z();
-    //       }
+      for(auto genparticle_: all_gen_particles)
+      {
+          if(std::abs(genparticle_.pdgId) == 15 && genparticle_.isLastCopy)
+          {
+              disp = genparticle_.vertex.r();
+              disp_t = genparticle_.vertex.rho();
+              disp_z = genparticle_.vertex.z();
+          }
 
-    //       if(std::abs(genparticle_.pdgId) == 1000015 && genparticle_.isLastCopy)
-    //       {
-    //          stau_p4 = genparticle_.p4;
-    //       }
+          // if(std::abs(genparticle_.pdgId) == 1000015 && genparticle_.isLastCopy)
+          // {
+          //    stau_p4 = genparticle_.p4;
+          // }
 
-    //   }
-    //   assert(disp != -9);
-    //   assert(disp_t != -9);
-    //   assert(stau_p4.X() != 0.0);
+      }
+      assert(disp != -9);
+      assert(disp_t != -9);
+      // assert(stau_p4.X() != 0.0);
       
-    //   // if(abs(disp_z) >=50.0) continue;
+      // if(abs(disp_z) >=50.0) continue;
 
-    //   // Print output
-    //   if(DEBUG_MODE) {
-    //     //if(disp_t >= 50 && disp_t <= 80) {
-    //         std::cout << "--------------------------------------\n";
-    //         std::cin.ignore();
-
-    //         size_t n_gen_particles = entry.genParticle_pdgId.size();
-    //         for(size_t gen_idx = 0; gen_idx < n_gen_particles; ++gen_idx) {
-    //           std::cout  << "idx: " << gen_idx << " "
-    //           << "pdgId: " << entry.genParticle_pdgId[gen_idx] << " "
-    //           << "pt: " << entry.genParticle_pt[gen_idx] << " "
-    //           << "eta: " << entry.genParticle_eta[gen_idx] << " "
-    //           << "phi: " << entry.genParticle_phi[gen_idx] << " "
-    //           << " vtx "
-    //           << " " << entry.genParticle_vtx_x[gen_idx]
-    //           << " " << entry.genParticle_vtx_y[gen_idx]
-    //           << " " << entry.genParticle_vtx_z[gen_idx]
-    //           << std::endl;
-    //        }
-
-    //       std::cout << std::endl;
-    //       std::cout << "event number :" << entry.evt << " Lumi: " << entry.lumi << std::endl;
-    //       genLeptons.PrintDecay(std::cout);
-    //       auto gen_p4 = genLeptons.visibleP4();
-    //       std::cout << std::endl << "Match of gen_vis to stau: " << ROOT::Math::VectorUtil::DeltaR(gen_p4, stau_p4) << std::endl;
-    //       info(entry);
-
-    //   }
-
-    //   h1_Tau_h_all->Fill(disp,entry.susy_ctau);
-    //   h1_Tau_h_all_t->Fill(disp_t,entry.susy_ctau);
-    //   h1_Tau_genpt_all->Fill(disp,gentau_pt);
-    //   h1_Tau_genpt_all_t->Fill(disp_t,gentau_pt);
-
-    //   TLorentzVector tau_p4;
-    //   tau_p4.SetPtEtaPhiM(entry.tau_pt, entry.tau_eta, entry.tau_phi, entry.tau_mass);
-    //   auto gen_p4 = genLeptons.visibleP4();
-    //   double dR = ROOT::Math::VectorUtil::DeltaR(tau_p4,gen_p4);
+      // Print output
+      if(DEBUG_MODE) {
+        //if(disp_t >= 50 && disp_t <= 80) {
 
 
-    //   // if(entry.genLepton_index < 0 && entry.genJet_index >= 0) continue;
-    //   // if(entry.tau_decayMode >= 0 && entry.tau_decayModeFindingNewDMs == 1 && dR<=0.2) // if recontructed
-    //   if(entry.tau_decayMode >= 0 && entry.tau_decayModeFindingNewDMs == 1) // if recontructed
-    //   {
-    //     // dR
-    //     // h2_dR_Tauvis_sTau->Fill(disp_t, ROOT::Math::VectorUtil::DeltaR(gen_p4, stau_p4));
-    //     // h2_dR_Taureco_Tauvis->Fill(disp_t, dR);
-    //     if(entry.genLepton_vis_pt < 80.0)
-    //       h2_dR_Taureco_sTau->Fill(disp_t, ROOT::Math::VectorUtil::DeltaR(tau_p4, stau_p4));
-    //     else
-    //       h2_dR_Taureco_sTau_h->Fill(disp_t, ROOT::Math::VectorUtil::DeltaR(tau_p4, stau_p4));
-    //     // if(entry.tau_pt<30 || abs(entry.tau_eta)>2.1) continue;
+          //   size_t n_gen_particles = entry.genParticle_pdgId.size();
+          //   for(size_t gen_idx = 0; gen_idx < n_gen_particles; ++gen_idx) {
+          //     std::cout  << "idx: " << gen_idx << " "
+          //     << "pdgId: " << entry.genParticle_pdgId[gen_idx] << " "
+          //     << "pt: " << entry.genParticle_pt[gen_idx] << " "
+          //     << "eta: " << entry.genParticle_eta[gen_idx] << " "
+          //     << "phi: " << entry.genParticle_phi[gen_idx] << " "
+          //     << " vtx "
+          //     << " " << entry.genParticle_vtx_x[gen_idx]
+          //     << " " << entry.genParticle_vtx_y[gen_idx]
+          //     << " " << entry.genParticle_vtx_z[gen_idx]
+          //     << std::endl;
+          //  }
 
-    //     Int_t nHits = 0;
-    //     bool reco_track = 0;
-    //     for(int track_i=0; track_i < entry.pfCand_track_pt.size(); track_i++ ) {
-    //       if(entry.pfCand_tauSignal[track_i]!=1) continue;
-    //       nHits += entry.pfCand_nPixelHits[track_i];
-    //       reco_track = 1;
-    //     }
-    //     if(entry.pfCand_track_pt.size()!=0 && reco_track==1){
-    //       pixhits_reco_disp->Fill(disp,nHits);
-    //       pixhits_reco_disp_t->Fill(disp_t,nHits);
-    //     }
+          std::cout << std::endl;
+          std::cout << "event number :" << entry.evt << " Lumi: " << entry.lumi << std::endl;
+          genLeptons.PrintDecay(std::cout);
+          // auto gen_p4 = genLeptons.visibleP4();
+          // std::cout << std::endl << "Match of gen_vis to stau: " << ROOT::Math::VectorUtil::DeltaR(gen_p4, stau_p4) << std::endl;
+          info(entry);
+
+      }
+
+                  std::cout << "--------------------------------------\n";
+            std::cin.ignore();
+
+      // h1_Tau_h_all->Fill(disp,entry.susy_ctau);
+      // h1_Tau_h_all_t->Fill(disp_t,entry.susy_ctau);
+      // h1_Tau_genpt_all->Fill(disp,gentau_pt);
+      // h1_Tau_genpt_all_t->Fill(disp_t,gentau_pt);
+
+      // TLorentzVector tau_p4;
+      // tau_p4.SetPtEtaPhiM(entry.tau_pt, entry.tau_eta, entry.tau_phi, entry.tau_mass);
+      // auto gen_p4 = genLeptons.visibleP4();
+      // double dR = ROOT::Math::VectorUtil::DeltaR(tau_p4,gen_p4);
 
 
-    //     h1_Tau_h_reco->Fill(disp,entry.susy_ctau);
-    //     h1_Tau_h_reco_t->Fill(disp_t,entry.susy_ctau);
+      // if(entry.genLepton_index < 0 && entry.genJet_index >= 0) continue;
+      // if(entry.tau_decayMode >= 0 && entry.tau_decayModeFindingNewDMs == 1 && dR<=0.2) // if recontructed
+      // if(entry.tau_decayMode >= 0 && entry.tau_decayModeFindingNewDMs == 1) // if recontructed
+      // {
+        // dR
+        // h2_dR_Tauvis_sTau->Fill(disp_t, ROOT::Math::VectorUtil::DeltaR(gen_p4, stau_p4));
+        // h2_dR_Taureco_Tauvis->Fill(disp_t, dR);
+        // if(entry.genLepton_vis_pt < 80.0)
+        //   h2_dR_Taureco_sTau->Fill(disp_t, ROOT::Math::VectorUtil::DeltaR(tau_p4, stau_p4));
+        // else
+        //   h2_dR_Taureco_sTau_h->Fill(disp_t, ROOT::Math::VectorUtil::DeltaR(tau_p4, stau_p4));
+        // if(entry.tau_pt<30 || abs(entry.tau_eta)>2.1) continue;
 
-    //     h1_Tau_genpt_reco->Fill(disp,gentau_pt);
-    //     h1_Tau_genpt_reco_t->Fill(disp_t,gentau_pt);
+      //   Int_t nHits = 0;
+      //   bool reco_track = 0;
+      //   for(int track_i=0; track_i < entry.pfCand_track_pt.size(); track_i++ ) {
+      //     if(entry.pfCand_tauSignal[track_i]!=1) continue;
+      //     nHits += entry.pfCand_nPixelHits[track_i];
+      //     reco_track = 1;
+      //   }
+      //   if(entry.pfCand_track_pt.size()!=0 && reco_track==1){
+      //     pixhits_reco_disp->Fill(disp,nHits);
+      //     pixhits_reco_disp_t->Fill(disp_t,nHits);
+      //   }
 
-    //     h3_dm_disp->Fill(genTauDecayMode, dm_encode.at(entry.tau_decayMode), disp);
-    //     h3_dm_disp_t->Fill(genTauDecayMode, dm_encode.at(entry.tau_decayMode), disp_t);
 
-    //     h2_pt_disp->Fill(1.0 - entry.tau_pt/gentau_pt, disp);
-    //     h2_pt_disp_t->Fill(1.0 - entry.tau_pt/gentau_pt, disp_t);
-    //   }
+      //   h1_Tau_h_reco->Fill(disp,entry.susy_ctau);
+      //   h1_Tau_h_reco_t->Fill(disp_t,entry.susy_ctau);
+
+      //   h1_Tau_genpt_reco->Fill(disp,gentau_pt);
+      //   h1_Tau_genpt_reco_t->Fill(disp_t,gentau_pt);
+
+      //   h3_dm_disp->Fill(genTauDecayMode, dm_encode.at(entry.tau_decayMode), disp);
+      //   h3_dm_disp_t->Fill(genTauDecayMode, dm_encode.at(entry.tau_decayMode), disp_t);
+
+      //   h2_pt_disp->Fill(1.0 - entry.tau_pt/gentau_pt, disp);
+      //   h2_pt_disp_t->Fill(1.0 - entry.tau_pt/gentau_pt, disp_t);
+      // }
     // }
   }
+  }
+
 
   TFile *outputFile = new TFile(outfile_name.c_str(),"RECREATE");
   h1_Tau_h_all->Write();
