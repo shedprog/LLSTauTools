@@ -67,8 +67,6 @@ this code is coppied from https://github.com/cms-tau-pog/TauMLTools
     VAR(Float_t, pv_ndof) /* number of degrees of freedom of the primary vertex (PV) */ \
     VAR(Int_t, entry_index) /* Index of the entry in the event */ \
     VAR(Int_t, total_entries) /* The total number of entries in the event */ \
-    /* SUSY stau Property */ \
-    VAR(Float_t, signal_class) /* class for tau-jet tag*/ \
     /* Gen lepton with the full decay chain */ \
     VAR(Int_t, genLepton_index) /* index of the gen lepton */ \
     VAR(Int_t, genLepton_kind) /* kind of the gen lepton:
@@ -79,7 +77,6 @@ this code is coppied from https://github.com/cms-tau-pog/TauMLTools
     VAR(Int_t, genLepton_lastMotherIndex) /* index of the last mother in genParticle_* vectors:
                                              >= 0 if at least one mother is available, -1 otherwise */ \
     VAR(std::vector<Int_t>, genParticle_pdgId) /* PDG ID */ \
-    VAR(std::vector<Int_t>, genParticle_status) /* status */ \
     VAR(std::vector<Long64_t>, genParticle_mother) /* index of the mother. If the paricle has more than one mother,
                                                       genParticle_mother = sum(10^(3*(mother_number-1)) * mother_index).
                                                       The maximal number of mothers = 6. */ \
