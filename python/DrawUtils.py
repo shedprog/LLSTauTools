@@ -27,7 +27,8 @@ def PlotHistList(canvas : ROOT.TCanvas,
                  hist_list : List[ROOT.TH1],
                  x_axis_title: str,
                  y_axis_title: str,
-                 rescale=False) -> None:
+                 rescale=True,
+                 log=False) -> None:
     '''
     Ploting List of histograms
     on the single pad
@@ -35,13 +36,15 @@ def PlotHistList(canvas : ROOT.TCanvas,
     canvas.cd()
     max_y = 0
     for i, h in enumerate(hist_list):
-        if rescale==True:
+        if rescale:
             h.Scale(1.0/h.Integral())
         max_y = max(max_y, h.GetMaximum())
         h.GetXaxis().SetTitle(x_axis_title)
         h.GetYaxis().SetTitle(y_axis_title)
         h.SetLineColor(ColorIterator(i))
         h.SetLineWidth(3)
+        if log:
+            canvas.SetLogy()
         h.Draw("histo same") if i!=0 else h.Draw("histo")
     hist_list[0].SetMaximum(max_y+0.1*max_y) # to fix ranges 
     canvas.Modified()

@@ -37,7 +37,7 @@ if __name__ == "__main__":
     ROOT.EnableImplicitMT(10)
     print("Starting RDataFrame:")
     for i, path in enumerate(args.paths):
-        files = glob.glob(path +"/*.root")
+        files = glob.glob(path +"/**/*.root", recursive=True)
         print("name:", args.names[i], "cuts:", args.cuts[i])
         df.append(ROOT.RDataFrame("taus", files[:int(args.number[i])]))
         filters.append(df[-1].Filter(args.cuts[i], args.names[i]))
@@ -58,6 +58,20 @@ if __name__ == "__main__":
     legend = DrawUtils.GetHistTitlesLegend(hists["eta"])
     DrawUtils.DrawLegend(canvas_eta, legend)
     canvas_eta.SaveAs(args.output+"/var_eta.pdf")
+
+    canvas_pt = DrawUtils.GetCanvas("canvas_pt_log")
+    DrawUtils.PlotHistList(canvas_pt, hists["pt"],"[GeV]","entries", log=True)
+    DrawUtils.DrawHeader(canvas_pt, "P^{T}(jet)" , "#tau reco", "c#tau_{0}=1000mm")
+    legend = DrawUtils.GetHistTitlesLegend(hists["pt"])
+    DrawUtils.DrawLegend(canvas_pt, legend)
+    canvas_pt.SaveAs(args.output+"/var_pt_log.pdf")
+
+    canvas_eta = DrawUtils.GetCanvas("canvas_eta_log")
+    DrawUtils.PlotHistList(canvas_eta, hists["eta"],"[-]","entries", log=True)
+    DrawUtils.DrawHeader(canvas_eta, "#eta(jet)" , "#tau reco", "c#tau_{0}=1000mm")
+    legend = DrawUtils.GetHistTitlesLegend(hists["eta"])
+    DrawUtils.DrawLegend(canvas_eta, legend)
+    canvas_eta.SaveAs(args.output+"/var_eta_log.pdf")
 
     canvas_rho = DrawUtils.GetCanvas("canvas_rho")
     DrawUtils.PlotHistList(canvas_rho, hists["rho"],"[-]","entries")

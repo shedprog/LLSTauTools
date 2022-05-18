@@ -49,12 +49,12 @@ if __name__ == "__main__":
             }
     # for mstau, mlsp, ctau0 in grid:
     for i, path in enumerate(args.paths):
-        files = glob.glob(path +"/*.root")
+        files = glob.glob(path +"/**/*.root", recursive=True)
         print("name:", args.names[i], "cuts:", args.cuts[i])
         print("files: ", files[:int(args.number[i])])
         df.append(ROOT.RDataFrame("taus", files[:int(args.number[i])]))
 
-        filters.append(df[-1].Filter(args.cuts[i], args.names[i]))
+        filters.append(df[-1].Filter("genLepton_kind==5", args.names[i]+"_base"))
         # filters[-1] = filters[-1].Filter("","has gen stau")
         # General kinematic check:
         get_kinem = MyFunc.DataFrameFunc.get_gen_info()
@@ -74,6 +74,9 @@ if __name__ == "__main__":
                                  .Define('dR_stau_jet','ROOT::Math::VectorUtil::DeltaR\
                                      (std::get<2>(gentau_info),jetp4)')
 
+        # Apply extra cuts
+        filters[-1] = filters[-1].Filter(args.cuts[i], args.names[i])
+
         hists['vis_pt'].append(filters[-1].Histo1D(("vis_pt",
                                                     f"vis_pt, {args.names[i]}",
                                                     60, 0.0, 800), "vis_pt"))
@@ -85,10 +88,10 @@ if __name__ == "__main__":
                                                     100, 0.0, 2.3), "vis_mass"))
         hists['displ'].append(filters[-1].Histo1D(("displ",
                                                     f"displ., {args.names[i]}",
-                                                    50, 0, 150), "d"))
+                                                    50, 0, 300), "d"))
         hists['displ_tr'].append(filters[-1].Histo1D(("displ_tr",
                                                     f"displ. tr, {args.names[i]}",
-                                                    50, 0, 150), "dt"))
+                                                    50, 0, 300), "dt"))
         hists['stau_E'].append(filters[-1].Histo1D(("stau_E",
                                                     f"gen stau_E. tr, {args.names[i]}",
                                                     50, 0, 2000), "stau_E"))
