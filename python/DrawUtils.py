@@ -2,7 +2,7 @@ import ROOT
 from typing import List
 
 def GetCanvas(name : str) -> ROOT.TCanvas:
-    c = ROOT.TCanvas(name, name, 1000, 1000)
+    c = ROOT.TCanvas(name, name, 700, 700)
     SetMyStyle()
     return c
 
@@ -27,7 +27,7 @@ def PlotHistList(canvas : ROOT.TCanvas,
                  hist_list : List[ROOT.TH1],
                  x_axis_title: str,
                  y_axis_title: str,
-                 rescale=True,
+                 rescale=False,
                  log=False) -> None:
     '''
     Ploting List of histograms
@@ -50,6 +50,24 @@ def PlotHistList(canvas : ROOT.TCanvas,
     canvas.Modified()
     canvas.Update()
     
+def PlotHist2D(canvas : ROOT.TCanvas,
+               hist_list : ROOT.TH2,
+               x_axis_title: str,
+               y_axis_title: str,
+               setups="colz",
+               log=False) -> None:
+    '''
+    Ploting List of histograms
+    on the single pad
+    '''
+    hist_list.GetXaxis().SetTitle(x_axis_title)
+    hist_list.GetYaxis().SetTitle(y_axis_title)
+    if log:
+        canvas.SetLogy()
+    hist_list.Draw(setups)
+    canvas.Modified()
+    canvas.Update()
+
 def GetHistTitlesLegend(hist_list : List[ROOT.TH1]) -> ROOT.TLegend:
     legend = ROOT.TLegend(0.6, 0.7, 0.9, 0.9)
     for hist in hist_list:
@@ -140,8 +158,9 @@ def createRatio(h1, h2, name):
     h3.SetMarkerStyle(21)
     h3.SetTitle("")
     h3.SetMinimum(0.0)
-    h3.SetMaximum(1.1)
+    h3.SetMaximum(1.4)
     # Set up plot for markers and errors
+    h3.SetLineWidth(3)
     h3.Sumw2()
     h3.SetStats(0)
     h3.Divide(h2)
@@ -150,18 +169,18 @@ def createRatio(h1, h2, name):
     y = h3.GetYaxis()
     y.SetTitle("ratio")
     y.SetNdivisions(505)
-    y.SetTitleSize(20)
-    y.SetTitleFont(43)
-    y.SetTitleOffset(1.55)
-    y.SetLabelFont(43)
-    y.SetLabelSize(15)
+    y.SetTitleSize(30)
+    y.SetTitleFont(49)
+    y.SetTitleOffset(1.00)
+    y.SetLabelFont(49)
+    y.SetLabelSize(20)
 
     # Adjust x-axis settings
     x = h3.GetXaxis()
-    x.SetTitleSize(20)
-    x.SetTitleFont(43)
-    x.SetTitleOffset(4.0)
-    x.SetLabelFont(43)
-    x.SetLabelSize(15)
+    x.SetTitleSize(30)
+    x.SetTitleFont(49)
+    x.SetTitleOffset(1.0)
+    x.SetLabelFont(49)
+    x.SetLabelSize(20)
 
     return h3

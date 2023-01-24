@@ -41,7 +41,7 @@ if __name__ == "__main__":
         print("name:", args.names[i], "cuts:", args.cuts[i])
         df.append(ROOT.RDataFrame("taus", files[:int(args.number[i])]))
         filters.append(df[-1].Filter(args.cuts[i], args.names[i]))
-        hists["pt"].append(filters[-1].Histo1D(("pt",args.names[i], 100, 0.0, 800), "jet_pt"))
+        hists["pt"].append(filters[-1].Histo1D(("pt",args.names[i], 100, 0.0, 1000), "jet_pt"))
         hists["eta"].append(filters[-1].Histo1D(("eta",args.names[i], 100, -2.5, 2.5), "jet_eta"))
         hists["rho"].append(filters[-1].Histo1D(("rho",args.names[i], 100, 0, 100), "rho"))
 

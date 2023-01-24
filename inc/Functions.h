@@ -44,3 +44,15 @@ bool dR_calc( const TLorentzVector& p4_1, const TLorentzVector& p4_2)
   if(dr_new <= dr) return true;
   else return false;
 }
+
+template<typename Scalar>
+static Scalar MyDeltaPhi(Scalar phi1, Scalar phi2)
+{
+      static constexpr Scalar pi = TMath::Pi();
+      Scalar dphi = phi1 - phi2;
+      if(dphi > pi)
+         dphi -= 2*pi;
+      else if(dphi <= -pi)
+         dphi += 2*pi;
+      return dphi;
+}

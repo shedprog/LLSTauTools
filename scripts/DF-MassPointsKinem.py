@@ -26,9 +26,16 @@ if __name__ == "__main__":
     parser.add_argument('-N','--number', nargs='+', help='Number of files to analyse', required=True)
     parser.add_argument('-o','--output', help='folder for the plot outputs', required=True)
     args = parser.parse_args()
-    assert(len(args.paths)==\
-           len(args.names)==\
-           len(args.cuts))
+    try:
+        assert(len(args.paths)==\
+               len(args.names)==\
+               len(args.cuts))
+        cuts = args.cuts
+    except:
+        assert(len(args.paths)==\
+               len(args.names))
+        cuts = [args.cuts[0] for _ in args.paths]
+        
 
     if not os.path.exists(args.output): os.makedirs(args.output)
 
@@ -45,12 +52,15 @@ if __name__ == "__main__":
              "stau_mass"   : [],
              "dRtaustau"   : [],
              "Angle_taustau" : [],
-             "dRjetstau"     : []
+             "dRjetstau"     : [],
+             "rel_pt" : [],
+             "d_mass" : [],
+             "dR_tau_jet" : []
             }
     # for mstau, mlsp, ctau0 in grid:
     for i, path in enumerate(args.paths):
         files = glob.glob(path +"/**/*.root", recursive=True)
-        print("name:", args.names[i], "cuts:", args.cuts[i])
+        print("name:", args.names[i], "cuts:", cuts[i])
         print("files: ", files[:int(args.number[i])])
         df.append(ROOT.RDataFrame("taus", files[:int(args.number[i])]))
 
@@ -62,8 +72,9 @@ if __name__ == "__main__":
                                  .Define('vis_pt','std::get<0>(gentau_info).Pt()')\
                                  .Define('vis_eta','std::get<0>(gentau_info).Eta()')\
                                  .Define('vis_mass','std::get<0>(gentau_info).mass()')\
-                                 .Define('dt', 'std::get<1>(gentau_info).Rho()')\
-                                 .Define('d', 'std::get<1>(gentau_info).R()')\
+                                 .Define('Lxy', 'std::get<1>(gentau_info).Rho()')\
+                                 .Define('Lxyz', 'std::get<1>(gentau_info).R()')\
+                                 .Define('Lz', 'std::get<1>(gentau_info).Z()')\
                                  .Define('stau_E', 'std::get<2>(gentau_info).E()')\
                                  .Define('stau_mass', 'std::get<2>(gentau_info).M()')\
                                  .Define('dR_stau_tau','ROOT::Math::VectorUtil::DeltaR\
@@ -72,10 +83,13 @@ if __name__ == "__main__":
                                      (std::get<0>(gentau_info),std::get<2>(gentau_info))')\
                                  .Define('jetp4','reco_tau::gen_truth::LorentzVectorM(jet_pt, jet_eta, jet_phi, jet_mass)')\
                                  .Define('dR_stau_jet','ROOT::Math::VectorUtil::DeltaR\
-                                     (std::get<2>(gentau_info),jetp4)')
+                                     (std::get<2>(gentau_info),jetp4)')\
+                                 .Define('rel_pt', '(jet_pt-vis_pt)/vis_pt')\
+                                 .Define('d_mass', 'jet_mass-vis_mass')\
+                                 .Define('dR_tau_jet', 'ROOT::Math::VectorUtil::DeltaR(std::get<0>(gentau_info),jetp4)')
 
         # Apply extra cuts
-        filters[-1] = filters[-1].Filter(args.cuts[i], args.names[i])
+        filters[-1] = filters[-1].Filter(cuts[i], args.names[i])
 
         hists['vis_pt'].append(filters[-1].Histo1D(("vis_pt",
                                                     f"vis_pt, {args.names[i]}",
@@ -86,12 +100,12 @@ if __name__ == "__main__":
         hists['vis_mass'].append(filters[-1].Histo1D(("vis_mass",
                                                     f"vis_mass, {args.names[i]}",
                                                     100, 0.0, 2.3), "vis_mass"))
-        hists['displ'].append(filters[-1].Histo1D(("displ",
+        hists['displ'].append(filters[-1].Histo1D(("Lxyz",
                                                     f"displ., {args.names[i]}",
-                                                    50, 0, 300), "d"))
-        hists['displ_tr'].append(filters[-1].Histo1D(("displ_tr",
+                                                    200, 0, 200), "Lxyz"))
+        hists['displ_tr'].append(filters[-1].Histo1D(("Lxy",
                                                     f"displ. tr, {args.names[i]}",
-                                                    50, 0, 300), "dt"))
+                                                    200, 0, 200), "Lxy"))
         hists['stau_E'].append(filters[-1].Histo1D(("stau_E",
                                                     f"gen stau_E. tr, {args.names[i]}",
                                                     50, 0, 2000), "stau_E"))
@@ -107,8 +121,19 @@ if __name__ == "__main__":
         hists['dRjetstau'].append(filters[-1].Histo1D(("dRjetstau",
                                                     f"gen dR(seedjet,stau), {args.names[i]}",
                                                     100, 0, 5.0), "dR_stau_jet"))
+        hists['rel_pt'].append(filters[-1].Histo1D(("rel_pt",
+                                                    f"(rel_pt, {args.names[i]}",
+                                                    150, -2.0, 2.0), "rel_pt"))
+        hists['d_mass'].append(filters[-1].Histo1D(("d_mass",
+                                                    f"(d_mass, {args.names[i]}",
+                                                    100, -5.0, 15.0), "d_mass"))
+        hists['dR_tau_jet'].append(filters[-1].Histo1D(("dR_tau_jet",
+                                                    f"(dR_tau_jet, {args.names[i]}",
+                                                    100, -1.0, 1.0), "dR_tau_jet"))
+
+
         
-    # print('All stats:')
+    print('All stats:')
     # allCutsReport = df.Report()
     # allCutsReport.Print()
 
@@ -181,5 +206,26 @@ if __name__ == "__main__":
     legend = DrawUtils.GetHistTitlesLegend(hists["dRjetstau"])
     DrawUtils.DrawLegend(canvas, legend)
     canvas.SaveAs(args.output+"/dRjetstau.pdf")
+
+    canvas = DrawUtils.GetCanvas("canvas_rel_pt")
+    DrawUtils.PlotHistList(canvas, hists['rel_pt'],"[(jet_pt-vis_pt)/vis_pt]","entries")
+    DrawUtils.DrawHeader(canvas, "rel_pt" , "#tau reco", "c#tau_{0}=1000mm")
+    legend = DrawUtils.GetHistTitlesLegend(hists["rel_pt"])
+    DrawUtils.DrawLegend(canvas, legend)
+    canvas.SaveAs(args.output+"/rel_pt.pdf")
+
+    canvas = DrawUtils.GetCanvas("canvas_d_mass")
+    DrawUtils.PlotHistList(canvas, hists['d_mass'],"jet_mass-vis_mass","entries")
+    DrawUtils.DrawHeader(canvas, "d_mass" , "#tau reco", "c#tau_{0}=1000mm")
+    legend = DrawUtils.GetHistTitlesLegend(hists["d_mass"])
+    DrawUtils.DrawLegend(canvas, legend)
+    canvas.SaveAs(args.output+"/d_mass.pdf")
+
+    canvas = DrawUtils.GetCanvas("canvas_dR_tau_jet")
+    DrawUtils.PlotHistList(canvas, hists['dR_tau_jet'],"dR_tau_jet","entries")
+    DrawUtils.DrawHeader(canvas, "dR_tau_jet" , "#tau reco", "c#tau_{0}=1000mm")
+    legend = DrawUtils.GetHistTitlesLegend(hists["dR_tau_jet"])
+    DrawUtils.DrawLegend(canvas, legend)
+    canvas.SaveAs(args.output+"/dR_tau_jet.pdf")
 
     # ROOT.gApplication.Run()
