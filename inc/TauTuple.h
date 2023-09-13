@@ -47,12 +47,14 @@ this code is coppied from https://github.com/cms-tau-pog/TauMLTools
                 emb_e = 4, emb_mu = 5, emb_tau = 6, emb_jet = 7, data = 8 */ \
     VAR(ULong64_t, dataset_id) /* ID of the dataset (needed to identify the original dataset after shuffle&merge) */ \
     VAR(ULong64_t, dataset_group_id) /* ID of the dataset group (needed to identify the original dataset group
-                                    after shufflTauIdDescriptore&merge) */ \
+                                    after shuffle&merge) */ \
+    VAR(Int_t, jetType) /* type of the Jet ( jet = 0, tau = 1 ) */ \
     VAR(Float_t, npu) /* number of in-time pu interactions added to the event */ \
     VAR4(Float_t, pv_x, pv_y, pv_z, pv_t) /* position and time of the primary vertex (PV) */ \
     VAR4(Float_t, pv_xE, pv_yE, pv_zE, pv_tE) /* position and time errors of the primary vertex (PV) */ \
     VAR(Float_t, pv_chi2) /* chi^2 of the primary vertex (PV) */ \
     VAR(Float_t, pv_ndof) /* number of degrees of freedom of the primary vertex (PV) */ \
+    VAR2(Float_t, met_pt, met_phi) /* MET momentum */ \
     VAR(Int_t, entry_index) /* Index of the entry in the event */ \
     VAR(Int_t, total_entries) /* The total number of entries in the event */ \
     /* Gen lepton with the full decay chain */ \
@@ -97,6 +99,15 @@ this code is coppied from https://github.com/cms-tau-pog/TauMLTools
     VAR(Int_t, genJet_n_leptons) /* number of leptons clustered inside the jet */ \
     VAR(Int_t, genJet_hadronFlavour) /* hadron-based flavour */ \
     VAR(Int_t, genJet_partonFlavour) /* parton-based flavour */ \
+    /* Tag object variables (for tag-and-probe data) */ \
+    VAR(Int_t, tagObj_valid) /* indicates presence of the tag object */ \
+    VAR4(Float_t, tagObj_pt, tagObj_eta, tagObj_phi, tagObj_mass) /* 4-momentum of the tag object */ \
+    VAR(Int_t, tagObj_charge) /* charge of the tag object */ \
+    VAR(UInt_t, tagObj_id) /* ID of the tag object */ \
+    VAR(Float_t, tagObj_iso) /* isolation of the tag object */ \
+    VAR(Int_t, has_extramuon) /* Extra muon present */ \
+    VAR(Int_t, has_extraelectron) /* Extra electron present */ \
+    VAR(Int_t, has_dimuon) /* Extra muon pair present */ \
     /* Jet variables (for both AK4 and AK8 (aka "fat") jets) */ \
     JET_VAR(Int_t, index) /* index of the jet */ \
     JET_VAR4(Float_t, pt, eta, phi, mass) /* 4-momentum of the jet */ \
@@ -176,9 +187,6 @@ this code is coppied from https://github.com/cms-tau-pog/TauMLTools
     CAND_VAR(Int_t, tauSignal) /* PF candidate is a part of the tau signal */ \
     CAND_VAR(Int_t, tauLeadChargedHadrCand) /* PF candidate is the leadChargedHadrCand of the tau */ \
     CAND_VAR(Int_t, tauIso) /* PF candidate is a part of the tau isolation */ \
-    CAND_VAR(Int_t, boostedTauSignal) /* PF candidate is a part of the boosted tau signal */ \
-    CAND_VAR(Int_t, boostedTauLeadChargedHadrCand) /* PF candidate is the leadChargedHadrCand of the boosted tau */ \
-    CAND_VAR(Int_t, boostedTauIso) /* PF candidate is a part of the boosted tau isolation */ \
     CAND_VAR(Int_t, jetDaughter) /* PF candidate is the jet daughter */ \
     CAND_VAR(Int_t, fatJetDaughter) /* PF candidate is the fat jet daughter */ \
     CAND_VAR(Int_t, subJetDaughter) /* index of the subjet of the fat jet to which PF candidate belongs
@@ -255,6 +263,7 @@ this code is coppied from https://github.com/cms-tau-pog/TauMLTools
     TRACK_VAR3(Int_t, n_LostStripHits_TRACK, n_LostStripHits_MISSING_INNER, \
                       n_LostStripHits_MISSING_OUTER) /* number Of Lost Strip Hits */ \
     /**/
+
 
 #define VAR(type, name) DECLARE_BRANCH_VARIABLE(type, name)
 DECLARE_TREE(tau_tuple, Tau, TauTuple, TAU_DATA, "taus")

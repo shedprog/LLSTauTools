@@ -26,7 +26,9 @@ class DataFrameFunc:
     def get_gen_info():
         get_kinem='''
         auto genLeptons = 
-        reco_tau::gen_truth::GenLepton::fromRootTuple(
+                reco_tau::gen_truth::GenLepton::fromRootTuple
+                        <ROOT::VecOps::RVec<Int_t>, ROOT::VecOps::RVec<Long64_t>, ROOT::VecOps::RVec<Float_t>>
+                        (
                         genLepton_lastMotherIndex,
                         genParticle_pdgId,
                         genParticle_mother,

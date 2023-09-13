@@ -68,6 +68,29 @@ inline std::ostream& operator<<(std::ostream& os, const GenParticle& p)
 
 class GenLepton {
 public:
+
+    static Point3D getPartVertex(const GenLepton& genlepton, const int pdgID)
+    {
+        const std::vector<GenParticle>& particles = genlepton.allParticles();
+        for(auto part: particles) {
+          if(std::abs(part.pdgId) == pdgID && part.isLastCopy)
+            return part.vertex;
+        }
+        std::cout << "No particle found in the GenLepton class";
+        std::exit(EXIT_FAILURE);
+    }
+
+    static LorentzVectorM getPartP4(const GenLepton& genlepton, const int pdgID)
+    {
+        const std::vector<GenParticle>& particles = genlepton.allParticles();
+        for(auto part: particles) {
+          if(std::abs(part.pdgId) == pdgID && part.isLastCopy)
+            return part.p4;
+        }
+        std::cout << "No particle found in the GenLepton class";
+        std::exit(EXIT_FAILURE);
+    }
+
     enum class Kind { PromptElectron = 1, PromptMuon = 2, TauDecayedToElectron = 3, TauDecayedToMuon = 4,
                       TauDecayedToHadrons = 5, Other = 6 };
 
