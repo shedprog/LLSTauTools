@@ -27,7 +27,8 @@ def PlotHistList(canvas : ROOT.TCanvas,
                  hist_list : List[ROOT.TH1],
                  x_axis_title: str,
                  y_axis_title: str,
-                 rescale=False) -> None:
+                 rescale=False,
+                 logY=False) -> None:
     '''
     Ploting List of histograms
     on the single pad
@@ -48,7 +49,7 @@ def PlotHistList(canvas : ROOT.TCanvas,
     canvas.Update()
     
 def GetHistTitlesLegend(hist_list : List[ROOT.TH1]) -> ROOT.TLegend:
-    legend = ROOT.TLegend(0.6, 0.7, 0.9, 0.9)
+    legend = ROOT.TLegend(0.6, 0.6, 0.9, 0.85)
     for hist in hist_list:
         t = hist.GetTitle()
         try:
@@ -77,11 +78,16 @@ def SetMyStyle() -> None:
     ROOT.gStyle.SetOptStat(0)
     ROOT.gStyle.SetOptTitle(0)
 
+    # ROOT.gStyle.SetPadTopMargin(0.05e)
+    # ROOT.gStyle.SetPadBottomMargin(0.13)
+    ROOT.gStyle.SetPadLeftMargin(0.15)
+    ROOT.gStyle.SetPadRightMargin(0.05)
+
     ROOT.gStyle.SetHistLineWidth(3)
     ROOT.gStyle.SetHistLineStyle(1)
 
 def DrawHeader(pad : ROOT.TPad,
-               titleText : str,
+            #    titleText : str,
                cmsText : str, 
                lumiText : str):
     pad.cd()
@@ -91,26 +97,26 @@ def DrawHeader(pad : ROOT.TPad,
 
     textSize = 30./padWidth if padHeight > padWidth else 30./padHeight
 
-    channelLine = ROOT.TLatex()
-    channelLine.SetTextFont(42)
-    channelLine.SetTextSize(textSize)
-    channelLine.DrawLatexNDC(0.11, 0.92, titleText)
+    # channelLine = ROOT.TLatex()
+    # channelLine.SetTextFont(42)
+    # channelLine.SetTextSize(textSize)
+    # channelLine.DrawLatexNDC(0.11, 0.92, titleText)
 
     cmsLine = ROOT.TLatex()
     cmsLine.SetTextFont(62)
     cmsLine.SetTextSize(textSize)
-    # cmsLine.DrawLatexNDC(0.33, 0.92, "CMS")
+    cmsLine.DrawLatexNDC(0.11, 0.92, "CMS")
 
     cmsTextLine = ROOT.TLatex()
     cmsTextLine.SetTextFont(52)
     cmsTextLine.SetTextSize(textSize)
-    cmsTextLine.DrawLatexNDC(0.4, 0.92, cmsText)
+    cmsTextLine.DrawLatexNDC(0.23, 0.92, cmsText)
 
     #CMS Work in Progres and Lumi information
     lumiLine = ROOT.TLatex()
     lumiLine.SetTextFont(42)
     lumiLine.SetTextSize(textSize)
-    lumiLine.DrawLatexNDC(0.64, 0.92, lumiText)
+    lumiLine.DrawLatexNDC(0.84, 0.92, lumiText)
 
     pad.Modified()
     pad.Update()
