@@ -5,11 +5,11 @@ from itertools import product
 import argparse
 import glob
 
+ROOT.gInterpreter.Declare("#include \"../inc/GenLepton.h\"")
+
 sys.path.append("..")
 import python.DrawUtils as DrawUtils
 import python.Functions as MyFunc
-
-ROOT.gInterpreter.Declare("#include \"../inc/GenLepton.h\"")
 
 ROOT.gROOT.SetBatch(True)
 
@@ -55,7 +55,8 @@ if __name__ == "__main__":
         print("files: ", files[:int(args.number[i])])
         df.append(ROOT.RDataFrame("taus", files[:int(args.number[i])]))
 
-        filters.append(df[-1].Filter(args.cuts[0], args.names[i]))
+        # filters.append(df[-1].Filter(args.cuts[0], args.names[i]))
+        filters.append(df[-1].Filter("genLepton_kind==2", args.names[i]+"_base"))
         # filters[-1] = filters[-1].Filter("","has gen stau")
         # General kinematic check:
         get_kinem = MyFunc.DataFrameFunc.get_gen_info()
@@ -116,21 +117,21 @@ if __name__ == "__main__":
     DrawUtils.DrawHeader(canvas, "Private work (CMS simulation)", "#tau-reco")
     legend = DrawUtils.GetHistTitlesLegend(hists["Angle_taustau"])
     DrawUtils.DrawLegend(canvas, legend)
-    canvas.SaveAs(args.output+"/Angle_taustau.pdf")
+    canvas.SaveAs(args.output+"/Angle_taustau.png")
     
     canvas = DrawUtils.GetCanvas("canvas_pt")
     DrawUtils.PlotHistList(canvas, hists['vis_pt'],"p^{T}_{vis}(#tau) [GeV]","arb. units", rescale=True)
     DrawUtils.DrawHeader(canvas, "Private work (CMS simulation)", "#tau-reco")
     legend = DrawUtils.GetHistTitlesLegend(hists["vis_pt"])
     DrawUtils.DrawLegend(canvas, legend)
-    canvas.SaveAs(args.output+"/vis_pt.pdf")
+    canvas.SaveAs(args.output+"/vis_pt.png")
 
     canvas = DrawUtils.GetCanvas("canvas_eta")
     DrawUtils.PlotHistList(canvas, hists['vis_eta'],"#eta_{vis}(#tau) [-]","arb. units", rescale=True)
     DrawUtils.DrawHeader(canvas, "Private work (CMS simulation)", "#tau-reco")
     legend = DrawUtils.GetHistTitlesLegend(hists["vis_eta"])
     DrawUtils.DrawLegend(canvas, legend)
-    canvas.SaveAs(args.output+"/vis_eta.pdf")
+    canvas.SaveAs(args.output+"/vis_eta.png")
 
 
     canvas = DrawUtils.GetCanvas("canvas_mass")
@@ -138,7 +139,7 @@ if __name__ == "__main__":
     DrawUtils.DrawHeader(canvas, "Private work (CMS simulation)", "#tau-reco")
     legend = DrawUtils.GetHistTitlesLegend(hists["vis_mass"])
     DrawUtils.DrawLegend(canvas, legend)
-    canvas.SaveAs(args.output+"/vis_mass.pdf")
+    canvas.SaveAs(args.output+"/vis_mass.png")
 
     canvas = DrawUtils.GetCanvas("canvas_displ")
     # canvas.SetLogy()
@@ -146,7 +147,7 @@ if __name__ == "__main__":
     DrawUtils.DrawHeader(canvas, "Private work (CMS simulation)", "#tau-reco")
     legend = DrawUtils.GetHistTitlesLegend(hists["displ"])
     DrawUtils.DrawLegend(canvas, legend)
-    canvas.SaveAs(args.output+"/displ.pdf")
+    canvas.SaveAs(args.output+"/displ.png")
 
     canvas = DrawUtils.GetCanvas("canvas_displ_tr")
     # canvas.SetLogy()
@@ -154,34 +155,34 @@ if __name__ == "__main__":
     DrawUtils.DrawHeader(canvas, "Private work (CMS simulation)", "#tau-reco")
     legend = DrawUtils.GetHistTitlesLegend(hists["displ_tr"])
     DrawUtils.DrawLegend(canvas, legend)
-    canvas.SaveAs(args.output+"/displ_tr.pdf")
+    canvas.SaveAs(args.output+"/displ_tr.png")
 
     canvas = DrawUtils.GetCanvas("canvas_stau_mass")
     DrawUtils.PlotHistList(canvas, hists['stau_mass'],"True mass(#tau)","arb. units", rescale=True)
     DrawUtils.DrawHeader(canvas, "Private work (CMS simulation)", "#tau-reco")
     legend = DrawUtils.GetHistTitlesLegend(hists["stau_mass"])
     DrawUtils.DrawLegend(canvas, legend)
-    canvas.SaveAs(args.output+"/stau_mass.pdf")
+    canvas.SaveAs(args.output+"/stau_mass.png")
 
     canvas = DrawUtils.GetCanvas("canvas_stau_E")
     DrawUtils.PlotHistList(canvas, hists['stau_E'],"#tau energy [GeV]","arb. units", rescale=True)
     DrawUtils.DrawHeader(canvas, "Private work (CMS simulation)", "#tau-reco")
     legend = DrawUtils.GetHistTitlesLegend(hists["stau_E"])
     DrawUtils.DrawLegend(canvas, legend)
-    canvas.SaveAs(args.output+"/stau_E.pdf")
+    canvas.SaveAs(args.output+"/stau_E.png")
 
     canvas = DrawUtils.GetCanvas("canvas_dRtaustau")
     DrawUtils.PlotHistList(canvas, hists['dRtaustau'],"dR(#tau,s#tau) [-]","arb. units", rescale=True)
     DrawUtils.DrawHeader(canvas, "Private work (CMS simulation)", "#tau-reco")
     legend = DrawUtils.GetHistTitlesLegend(hists["dRtaustau"])
     DrawUtils.DrawLegend(canvas, legend)
-    canvas.SaveAs(args.output+"/dRtaustau.pdf")
+    canvas.SaveAs(args.output+"/dRtaustau.png")
 
     canvas = DrawUtils.GetCanvas("canvas_dRjetstau")
     DrawUtils.PlotHistList(canvas, hists['dRjetstau'],"dR(AK4-jet,s#tau) [-]","arb. units", rescale=True)
     DrawUtils.DrawHeader(canvas, "Private work (CMS simulation)", "#tau-reco")
     legend = DrawUtils.GetHistTitlesLegend(hists["dRjetstau"])
     DrawUtils.DrawLegend(canvas, legend)
-    canvas.SaveAs(args.output+"/dRjetstau.pdf")
+    canvas.SaveAs(args.output+"/dRjetstau.png")
 
     # ROOT.gApplication.Run()

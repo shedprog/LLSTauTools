@@ -6,10 +6,10 @@ Author: Konstantin Androsov
 
 #include <bitset>
 
-#include <Math/LorentzVector.h>
-#include <Math/PtEtaPhiM4D.h>
-#include <Math/Point3D.h>
-#include <Math/GenVector/Cartesian3D.h>
+// #include <Math/GenVector/LorentzVector.h>
+// #include <Math/GenVector/PtEtaPhiM4D.h>
+// #include <Math/GenVector/Point3D.h>
+// #include <Math/GenVector/Cartesian3D.h>
 
 
 namespace reco_tau {
@@ -118,27 +118,27 @@ public:
         return leptons;
     }
 
-    static Point3D getPartVertex(const GenLepton& genlepton, const int pdgID)
-    {
-        const std::vector<GenParticle>& particles = genlepton.allParticles();
-        for(auto part: particles) {
-          if(std::abs(part.pdgId) == pdgID && part.isLastCopy)
-            return part.vertex;
-        }
-        std::cout << "No particle found in the GenLepton class";
-        std::exit(EXIT_FAILURE);
-    }
+    // static Point3D getPartVertex(const GenLepton& genlepton, const int pdgID)
+    // {
+    //     const std::vector<GenParticle>& particles = genlepton.allParticles();
+    //     for(auto part: particles) {
+    //       if(std::abs(part.pdgId) == pdgID && part.isLastCopy)
+    //         return part.vertex;
+    //     }
+    //     std::cout << "No particle found in the GenLepton class";
+    //     std::exit(EXIT_FAILURE);
+    // }
 
-    static LorentzVectorM getPartP4(const GenLepton& genlepton, const int pdgID)
-    {
-        const std::vector<GenParticle>& particles = genlepton.allParticles();
-        for(auto part: particles) {
-          if(std::abs(part.pdgId) == pdgID && part.isLastCopy)
-            return part.p4;
-        }
-        std::cout << "No particle found in the GenLepton class";
-        std::exit(EXIT_FAILURE);
-    }
+    // static LorentzVectorM getPartP4(const GenLepton& genlepton, const int pdgID)
+    // {
+    //     const std::vector<GenParticle>& particles = genlepton.allParticles();
+    //     for(auto part: particles) {
+    //       if(std::abs(part.pdgId) == pdgID && part.isLastCopy)
+    //         return part.p4;
+    //     }
+    //     std::cout << "No particle found in the GenLepton class";
+    //     std::exit(EXIT_FAILURE);
+    // }
 
     template<typename IntVector, typename LongVector, typename FloatVector>
     static GenLepton fromRootTuple(int lastMotherIndex,
