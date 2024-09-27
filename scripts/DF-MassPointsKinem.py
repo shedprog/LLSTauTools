@@ -56,7 +56,7 @@ if __name__ == "__main__":
         df.append(ROOT.RDataFrame("taus", files[:int(args.number[i])]))
 
         # filters.append(df[-1].Filter(args.cuts[0], args.names[i]))
-        filters.append(df[-1].Filter("genLepton_kind==2", args.names[i]+"_base"))
+        filters.append(df[-1].Filter("genLepton_kind==5", args.names[i]+"_base"))
         # filters[-1] = filters[-1].Filter("","has gen stau")
         # General kinematic check:
         get_kinem = MyFunc.DataFrameFunc.get_gen_info()
